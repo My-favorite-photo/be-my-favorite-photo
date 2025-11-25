@@ -20,12 +20,17 @@ if (isProduction) {
   app.use(morgan('combined'));
 }
 
+//-------- router module --------
 app.get('/', (req, res) => {
   res.json({
     message: 'HELLO MY PHOTO',
     timeStamp: new Date().toISOString(),
   });
 });
+
+// app.use("/auth", authRouter)
+
+//-------- router module ---------
 
 app.use(errorHandler);
 
