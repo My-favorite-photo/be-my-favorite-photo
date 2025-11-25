@@ -1,0 +1,61 @@
+{
+  "name": "be-my-favorite-photo",
+  "version": "1.0.0",
+  "description": "my-favorite-photo backend-express-project",
+  "keywords": [
+    "myFavoritePhoto"
+  ],
+  "homepage": "https://github.com/My-favorite-photo/be-my-favorite-photo#readme",
+  "bugs": {
+    "url": "https://github.com/My-favorite-photo/be-my-favorite-photo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/My-favorite-photo/be-my-favorite-photo.git"
+  },
+  "license": "MIT",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "engines": {
+    "node": ">=22.x",
+    "npm": ">=11.x"
+  },
+  "lint-staged": {
+    "**/*.(js,jsx,ts,tsx)": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
+  "scripts": {
+    "dev": "nodemon --env-file=./.env src/app.js",
+    "generate": "npx prisma generate"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^10.0.0",
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.1.0",
+    "express-jwt": "^8.5.1",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "prisma": "^7.0.0"
+  }
+}

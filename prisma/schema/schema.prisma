@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+//회원
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  nickname     String
+  points       Int?     @default(0)
+  refreshToken String?
+  createdAt    DateTime @default(now())
+
+  // Relations
+  card      Card[]
+  purchases Order[]    @relation("Purchaser")
+  sales     Order[]    @relation("Seller")
+  exchanges Exchange[]
+  history   History[]
+}
+
+//판매물 등록
+model Card {
+  id      String @id @default(cuid())
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id])
+
+  name        String
+  imageUrl    String
+  description String
+
+  genre String
+  grade String
+
+  point  Int
+  status CardStatus @default(OWNED)
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  orders    Order[]
+  exchanges Exchange[]
+}
+
+enum CardStatus {
+  OWNED // 소유중
+  LISTED // 판매 등록됨
+  RESERVED // 거래 예약됨
+  SOLD // 판매됨
+  EXCHANGE // 교환 제시중
+}
+
+//order
+model Order {
+  id String @id @default(cuid())
+
+  cardId String
+  card   Card   @relation(fields: [cardId], references: [id])
+
+  buyerId String
+  buyer   User   @relation("Purchaser", fields: [buyerId], references: [id])
+
+  sellerId String
+  seller   User   @relation("Seller", fields: [sellerId], references: [id])
+
+  status        OrderStatus @default(PENDING)
+  paymentMethod String?
+  failureReason String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+enum OrderStatus {
+  PENDING // 결제 대기
+  PAID // 결제 성공
+  FAILED // 결제 실패
+  REFUNDED // 환불됨
+  COMPLETED // 구매 완료
+}
+
+// 교환
+model Exchange {
+  id          String @id @default(cuid())
+  requesterId String // 요청자
+  requester   User   @relation(fields: [requesterId], references: [id])
+
+  cardId String
+  card   Card   @relation(fields: [cardId], references: [id])
+
+  status  ExchangeStatus @default(PENDING)
+  message String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 교환 상태
+enum ExchangeStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+}
+
+// 알림
+model History {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  isRead    Boolean  @default(false) // 알림 확인 유무
+  createdAt DateTime @default(now())
+}
