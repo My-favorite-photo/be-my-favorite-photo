@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import { config, isDevelopment, isProduction } from './configs/config.js';
 import { cors } from './middlewares/cors.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import authRouter from './routes/authRoute.js';
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// app.use("/auth", authRouter)
+app.use('/auth', authRouter);
 
 //-------- router module ---------
 

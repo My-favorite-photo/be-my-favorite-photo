@@ -10,7 +10,11 @@ const getPrismaLogLevel = () => {
   }
   return ['query', 'info', 'warn', 'error'];
 };
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+  ssl: false, // SSL 비활성화
+});
 
 export const prisma = new PrismaClient({
   adapter,
