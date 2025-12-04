@@ -47,7 +47,7 @@ authRouter.post('/login', async (req, res, next) => {
     const user = await authService.getUser(email, password);
 
     const accessToken = authService.createToken(user);
-    const refreshToken = authService.createToken(user);
+    const refreshToken = authService.createToken(user, 'refresh');
     await authService.updateUser(user.id, { refreshToken });
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
