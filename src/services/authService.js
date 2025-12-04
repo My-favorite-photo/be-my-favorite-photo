@@ -73,9 +73,16 @@ function createToken(user, type) {
 }
 
 async function updateUser(id, data) {
-  const updateUser = await authRepository.updateUser(id, data);
-  return filterSensitiveUserData(updateUser);
+  try {
+    const updateUser = await authRepository.updateUser(id, data);
+    return filterSensitiveUserData(updateUser);
+  } catch (error) {
+    const customError = new Error('사용자 정보 업데이트 중 오류가 발생했습니다.');
+    customError.code = 500;
+    throw customError;
+  }
 }
+
 async function refreshToken(oldRefreshToken) {
   try {
     const payload = jwt.verify(oldRefreshToken, process.env.JWT_SECRET);
