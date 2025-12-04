@@ -15,7 +15,6 @@
   },
   "license": "MIT",
   "author": "",
-  "type": "module",
   "main": "index.js",
   "engines": {
     "node": ">=22.x",
@@ -28,13 +27,19 @@
     ]
   },
   "scripts": {
+    "prebuild": "rm -rf dist",
     "dev": "nodemon --env-file=./.env src/app.js",
-    "generate": "npx prisma generate"
+    "start": "node -r dotenv/config dist/src/app.js",
+    "build": "npm run generate && npx swc src -d dist && npm run copy:prisma",
+    "generate": "npx prisma generate",
+    "copy:prisma": "cp -r src/generated dist/src"
   },
   "dependencies": {
     "@faker-js/faker": "^10.0.0",
     "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "^7.0.0",
+    "@swc/cli": "^0.7.9",
+    "@swc/core": "^1.15.3",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "express": "^5.2.0",
