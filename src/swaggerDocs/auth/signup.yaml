@@ -1,0 +1,31 @@
+summary: 새로운 사용자 계정을 등록합니다.
+tags: [Auth]
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - email
+          - password
+          - nickname
+        properties:
+          email:
+            type: string
+            format: email
+          password:
+            type: string
+          nickname:
+            type: string
+responses:
+  '201':
+    description: 회원가입 성공
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: 회원가입 성공
