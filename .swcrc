@@ -12,9 +12,9 @@
     }
   },
   "minify": false, // 최상위  minify도 false로 변경
-  "module": {
-    "type": "commonjs"
-  },
+  // "module": {
+  //   "type": "commonjs"
+  // },
   // 개발환경에서 에러 -> 컴퍼일전 원본 코드의 줄 번호를 추적 소스맵 활성
   // ! 프로덕션에선 false로 돌립니다.
   "sourceMaps": true
