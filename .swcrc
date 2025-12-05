@@ -1,0 +1,21 @@
+{
+  "jsc": {
+    "target": "esnext",
+    "parser": {
+      "syntax": "typescript",
+      "tsx": false
+    },
+    // 개발시에는 속도를 위해 잠시 minify는 꺼두겠습니다.
+    "minify": {
+      "compress": false,
+      "mangle": false // 변수와 함수이름도 더 짧고 의미 없는 이름으로  변경
+    }
+  },
+  "minify": false, // 최상위  minify도 false로 변경
+  "module": {
+    "type": "commonjs"
+  },
+  // 개발환경에서 에러 -> 컴퍼일전 원본 코드의 줄 번호를 추적 소스맵 활성
+  // ! 프로덕션에선 false로 돌립니다.
+  "sourceMaps": true
+}
