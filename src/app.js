@@ -9,9 +9,9 @@ import authRouter from './routes/authRoute.js';
 
 const app = express();
 
+app.use(cors);
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors);
 
 if (isDevelopment) {
   app.use(morgan('dev'));

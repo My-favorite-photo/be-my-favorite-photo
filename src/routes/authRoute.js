@@ -52,9 +52,10 @@ authRouter.post('/login', async (req, res, next) => {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'none',
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
     });
-    res.json({ ...user, accessToken });
+    res.json({ user, accessToken });
   } catch (error) {
     next(error);
   }
@@ -76,6 +77,7 @@ authRouter.post('/refresh', async (req, res, next) => {
       httpOnly: true,
       sameSite: 'none',
       secure: true,
+      path: '/',
     });
 
     return res.json({ accessToken: newAccessToken });
