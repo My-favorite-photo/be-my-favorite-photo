@@ -3,7 +3,7 @@ import { isDevelopment } from '../configs/config.js';
 export const cors = (req, res, next) => {
   const origin = req.headers.origin || req.headers.host || '';
 
-  const whiteList = ['http://locahost:3000'];
+  const whiteList = ['http://localhost:3000'];
 
   const isAllowed = isDevelopment || whiteList.includes(origin);
   if (isAllowed) {
