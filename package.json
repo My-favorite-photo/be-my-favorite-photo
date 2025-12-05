@@ -30,9 +30,10 @@
     "prebuild": "rm -rf dist",
     "dev": "nodemon --env-file=./.env src/app.js",
     "start": "node -r dotenv/config dist/src/app.js",
-    "build": "npm run generate && npx swc src -d dist && npm run copy:prisma",
+    "build": "npm run generate && npm run copy:assets && npx swc src -d dist && npm run copy:prisma",
     "generate": "npx prisma generate",
-    "copy:prisma": "cp -r src/generated dist/src"
+    "copy:prisma": "cp -r src/generated dist/src",
+    "copy:assets": "cpd -r src/swaggerDocs ist/swaggerDocs"
   },
   "dependencies": {
     "@faker-js/faker": "^10.0.0",
@@ -49,6 +50,8 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "zod": "^4.1.11"
   },
   "devDependencies": {

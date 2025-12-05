@@ -18,6 +18,12 @@ import authService from '../services/authService.js';
 
 const authRouter = express.Router();
 
+/**
+ * @swagger
+ * /auth/signup:
+ *    post:
+ *        $ref: '../swaggerDocs/auth/signup.yaml'
+ */
 authRouter.post('/signup', async (req, res, next) => {
   try {
     const { email, password, nickname } = req.body;
