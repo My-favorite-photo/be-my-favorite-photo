@@ -10,6 +10,7 @@ import { specs } from './configs/swagger.js';
 import { cors } from './middlewares/cors.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import authRouter from './routes/authRoute.js';
+import photoCardRouter from './routes/photoCardRouter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,7 +39,9 @@ app.get('/', (req, res) => {
   });
 });
 
+app.use('/uploads', express.static('uploads'));
 app.use('/auth', authRouter);
+app.use('/cards', photoCardRouter);
 
 //-------- router module ---------
 
