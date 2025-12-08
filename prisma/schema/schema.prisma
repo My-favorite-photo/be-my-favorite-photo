@@ -7,115 +7,191 @@ datasource db {
   provider = "postgresql"
 }
 
-// @TODO 한 파일안에 스키마가 많으면 분리시도
-
-//회원
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  password     String
-  nickname     String
-  points       Int?     @default(0)
+  id           String  @id @default(cuid())
+  email        String  @unique @db.VarChar(255)
+  password     String  @db.VarChar(255)
+  nickname     String  @unique @db.VarChar(50)
   refreshToken String?
-  createdAt    DateTime @default(now())
 
-  // Relations
-  card      Card[]
-  purchases Order[]    @relation("Purchaser")
-  sales     Order[]    @relation("Seller")
-  exchanges Exchange[]
-  history   History[]
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  // 관계 설정
+  point          Point?
+  pointHistories PointHistory[]
+  userCards      UserCard[]
+  sales          Sale[]
+
+  // 교환 관련: 내가 신청한 것 vs 내가 받은 요청
+  sentTrades     Trade[] @relation("TradeApplicant")
+  receivedTrades Trade[] @relation("TradeOwner")
+
+  notifications Notification[]
+  createdCards  PhotoCard[]    @relation("CardCreator") // 크리에이터인 경우
+
+  // @@map("users")
 }
 
-//판매물 등록
-model Card {
-  id      String @id @default(cuid())
-  ownerId String
-  owner   User   @relation(fields: [ownerId], references: [id])
+model Trade {
+  id          String      @id @default(cuid())
+  applicantId String // 교환 신청자
+  ownerId     String // 교환 대상자 (원주인)
+  saleId      String
+  description String? // 교환 제안 메시지
+  status      TradeStatus @default(PENDING)
+  createdAt   DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime    @updatedAt @db.Timestamptz(6)
 
-  name        String
-  imageUrl    String
-  description String
-
-  genre String
-  grade String
-
-  point  Int
-  status CardStatus @default(OWNED)
-
-  createdAt DateTime @default(now())
-
-  // Relations
-  orders    Order[]
-  exchanges Exchange[]
+  applicant      User           @relation("TradeApplicant", fields: [applicantId], references: [id], onDelete: Cascade)
+  owner          User           @relation("TradeOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  sale           Sale           @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  tradeHistories TradeHistory[] // 교환에 포함된 카드들 (양쪽 모두)
 }
 
-enum CardStatus {
-  OWNED // 소유중
-  LISTED // 판매 등록됨
-  RESERVED // 거래 예약됨
-  SOLD // 판매됨
-  EXCHANGE // 교환 제시중
-}
-
-//order
-model Order {
-  id String @id @default(cuid())
-
-  cardId String
-  card   Card   @relation(fields: [cardId], references: [id])
-
-  buyerId String
-  buyer   User   @relation("Purchaser", fields: [buyerId], references: [id])
-
-  sellerId String
-  seller   User   @relation("Seller", fields: [sellerId], references: [id])
-
-  status        OrderStatus @default(PENDING)
-  paymentMethod String?
-  failureReason String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-}
-
-enum OrderStatus {
-  PENDING // 결제 대기
-  PAID // 결제 성공
-  FAILED // 결제 실패
-  REFUNDED // 환불됨
-  COMPLETED // 구매 완료
-}
-
-// 교환
-model Exchange {
-  id          String @id @default(cuid())
-  requesterId String // 요청자
-  requester   User   @relation(fields: [requesterId], references: [id])
-
-  cardId String
-  card   Card   @relation(fields: [cardId], references: [id])
-
-  status  ExchangeStatus @default(PENDING)
-  message String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// 교환 상태
-enum ExchangeStatus {
+enum TradeStatus {
   PENDING
   ACCEPTED
   REJECTED
+  CANCELLED
   COMPLETED
 }
 
-// 알림
-model History {
+model PhotoCard {
+  id          String  @id @default(cuid())
+  creatorId   String
+  name        String  @db.VarChar(100)
+  imageUrl    String  @db.VarChar(2048)
+  description String? @db.Text
+
+  // 등급과 장르는 Enum으로 관리 (성능 최적화)
+  grade CardGrade
+  genre CardGenre
+
+  totalQuantity Int // 총 발행량
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(6)
+
+  creator   User       @relation("CardCreator", fields: [creatorId], references: [id])
+  userCards UserCard[] // 이 템플릿으로 발행된 실제 카드들
+}
+
+enum CardGrade {
+  COMMON
+  RARE
+  SUPER_RARE
+  LEGENDARY
+}
+
+enum CardGenre {
+  TRAVEL
+  LANDSCAPE
+  PORTRAIT
+  OBJECT
+}
+
+model Sale {
+  id          String     @id @default(cuid())
+  sellerId    String
+  price       Int
+  description String?    @db.Text
+  status      SaleStatus @default(ON_SALE)
+  createdAt   DateTime   @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime   @updatedAt @db.Timestamptz(6)
+
+  seller        User          @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  trade         Trade[]
+  saleHistories SaleHistory[] // 판매에 포함된 카드 목록
+}
+
+enum SaleStatus {
+  ON_SALE
+  SOLD_OUT
+  CANCELLED
+}
+
+model UserCard {
+  id          String     @id @default(cuid())
+  userId      String
+  photoCardId String
+  status      CardStatus @default(OWNED) // 보유중, 판매중, 교환중 등 상태 관리
+  createdAt   DateTime   @default(now()) @db.Timestamptz(6)
+
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photoCard       PhotoCard      @relation(fields: [photoCardId], references: [id])
+  totalQuantity   Int
+  // N:M 관계를 위한 연결
+  saleHistories   SaleHistory[]
+  tradeIHistories TradeHistory[]
+}
+
+enum CardStatus {
+  OWNED // 보유 중 (기본)
+  ON_SALE // 판매 등록됨
+  TRADING // 교환 진행 중
+  BURNED // 소각됨 (필요 시)
+}
+
+model TradeHistory {
+  id         String        @id @default(cuid())
+  tradeId    String
+  userCardId String
+  type       TradeItemType // GIVEN(신청자가 주는 것) vs TAKEN(대상자에게 받는 것)
+
+  trade    Trade    @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  userCard UserCard @relation(fields: [userCardId], references: [id], onDelete: Cascade)
+}
+
+enum TradeItemType {
+  OFFERED // 신청자가 제공하는 카드
+  TARGET // 신청자가 원하는 상대방 카드
+}
+
+model SaleHistory {
+  id         String @id @default(cuid())
+  saleId     String
+  userCardId String
+
+  sale     Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  userCard UserCard @relation(fields: [userCardId], references: [id], onDelete: Cascade)
+}
+
+model Point {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  balance   Int      @default(0)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PointHistory {
+  id          String    @id @default(cuid())
+  userId      String
+  amount      Int // 변동량 (+/-)
+  type        PointType // 변동 사유
+  description String? // 상세 설명 (예: "피카츄 카드 판매 대금")
+  createdAt   DateTime  @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum PointType {
+  JOIN_BONUS
+  DAILY_CHECK_IN
+  PURCHASE_REWARD
+  SALE_INCOME
+  BUY_SPEND
+  EXCHANGE_FEE
+  REFUND
+}
+
+model Notification {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  message   String
-  isRead    Boolean  @default(false) // 알림 확인 유무
-  createdAt DateTime @default(now())
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

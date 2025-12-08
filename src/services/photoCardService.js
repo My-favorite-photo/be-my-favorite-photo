@@ -24,6 +24,7 @@ async function createNewCard(creatorId, data) {
         userId: creatorId,
         photoCardId: newPhotoCard.id,
         status: 'OWNED',
+        totalQuantity: data.totalQuantity,
       },
     });
 

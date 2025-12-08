@@ -31,7 +31,8 @@
     "prebuild": "rm -rf dist",
     "dev": "nodemon --env-file=./.env src/app.js",
     "start": "node -r dotenv/config dist/src/app.js",
-    "build": "npm run generate && npx swc src -d dist && npm run copy:assets && npm run copy:prisma",
+    "build": "npm run migrate:deploy && npm run generate && npx swc src -d dist && npm run copy:assets && npm run copy:prisma",
+    "migrate:deploy": "npx prisma migrate deploy",
     "generate": "npx prisma generate",
     "copy:prisma": "cp -r src/generated dist/src",
     "copy:assets": "cp -r src/swaggerDocs dist/swaggerDocs"

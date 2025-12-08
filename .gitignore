@@ -22,7 +22,6 @@ yarn-error.log*
 Thumbs.db
 
 # prisma
-prisma/migrations
 src/generated
 
 # images (local test)
