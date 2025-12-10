@@ -21,12 +21,14 @@ photoCardRouter.post(
       const rawGenre = req.body.genre.toUpperCase();
       const rawTotalQuantity = req.body.totalQuantity;
       const totalQuantity = Number(rawTotalQuantity);
+      const price = Number(req.body.price);
       const cardData = {
         ...req.body,
         imageUrl: imageUrl,
         grade: rawGrade,
         genre: rawGenre,
         totalQuantity: totalQuantity,
+        price,
       };
 
       // if (!cardData) {
@@ -53,6 +55,7 @@ photoCardRouter.get('/', async (req, res, next) => {
   try {
     const filters = req.query;
     const cards = await photoCardService.getMarketplaceCards(filters);
+
     res.status(200).json({
       success: true,
       message: '성공적으로 마켓플레이스 데이터를 불러왔습니다.',

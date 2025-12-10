@@ -12,6 +12,7 @@ async function createNewCard(creatorId, data) {
         imageUrl: data.imageUrl,
         grade: data.grade,
         genre: data.genre,
+        price: data.price,
         totalQuantity: data.totalQuantity,
         description: data.description,
       },
@@ -24,6 +25,7 @@ async function createNewCard(creatorId, data) {
         userId: creatorId,
         photoCardId: newPhotoCard.id,
         status: 'OWNED',
+        price: data.price,
         totalQuantity: data.totalQuantity,
       },
     });
