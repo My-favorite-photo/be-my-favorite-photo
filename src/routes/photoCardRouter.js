@@ -3,6 +3,7 @@ import express from 'express';
 import auth from '../middlewares/auth.js';
 import { upload } from '../middlewares/multer.js';
 import photoCardService from '../services/photoCardService.js';
+import { getCardDetail, getMarketplaceCards } from '../controller/photoCardController.js';
 
 const photoCardRouter = express.Router();
 
@@ -51,36 +52,37 @@ photoCardRouter.post(
 
 // 전체 카드 도감 조회
 // 마켓플레이스에서 모든 카드 목록을 보여줍니다.
-photoCardRouter.get('/', async (req, res, next) => {
-  try {
-    const filters = req.query;
-    const cards = await photoCardService.getMarketplaceCards(filters);
-
-    res.status(200).json({
-      success: true,
-      message: '성공적으로 마켓플레이스 데이터를 불러왔습니다.',
-      cards,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+// photoCardRouter.get('/', async (req, res, next) => {
+//   try {
+//     const filters = req.query;
+//     const cards = await photoCardService.getMarketplaceCards(filters);
+//     res.status(200).json({
+//       success: true,
+//       message: '성공적으로 마켓플레이스 데이터를 불러왔습니다.',
+//       cards,
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+photoCardRouter.get('/', getMarketplaceCards);
 
 // 카드 상세 정보 조회
 // Marketplace 에서 특정 카드를 클릭했을 때 상세 정보 페이지
-photoCardRouter.get('/:photoCardId', async (req, res, next) => {
-  try {
-    const { photoCardId } = req.params;
+// photoCardRouter.get('/:photoCardId', async (req, res, next) => {
+//   try {
+//     const { photoCardId } = req.params;
 
-    const cardDetail = await photoCardService.getCardDetail(photoCardId);
-    res.status(200).json({
-      success: true,
-      message: '마켓플레이스 상세 데이터를 불러왔습니다.',
-      cardDetail,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+//     const cardDetail = await photoCardService.getCardDetail(photoCardId);
+//     res.status(200).json({
+//       success: true,
+//       message: '마켓플레이스 상세 데이터를 불러왔습니다.',
+//       cardDetail,
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+photoCardRouter.get('/:photoCardId', getCardDetail);
 
 export default photoCardRouter;

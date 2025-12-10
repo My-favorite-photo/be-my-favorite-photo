@@ -2,6 +2,7 @@ import { NotFoundException } from '../common/exceptions/notFoundException.js';
 import { prisma } from '../configs/prismaClient.js';
 import photoCardRepository from '../repositories/photoCardRepository.js';
 
+// 새 카드 생성
 async function createNewCard(creatorId, data) {
   return prisma.$transaction(async (tx) => {
     // PhotoCard 원본/도안 생성
@@ -36,6 +37,7 @@ async function createNewCard(creatorId, data) {
     };
   });
 }
+
 // 마켓플레이스 - 전체 카드 도감 목록 조회
 async function getMarketplaceCards(filters) {
   return photoCardRepository.findPhotoCards(filters);
