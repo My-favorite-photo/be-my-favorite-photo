@@ -65,7 +65,6 @@ model PhotoCard {
   name        String    @db.VarChar(100)
   imageUrl    String    @db.VarChar(2048)
   description String?   @db.Text
-  price       Int
   // 등급과 장르는 Enum으로 관리 (성능 최적화)
   grade       CardGrade
   genre       CardGenre
@@ -122,7 +121,6 @@ model UserCard {
   price       Int        @default(0) // 가격
   status      CardStatus @default(OWNED) // 보유중, 판매중, 교환중 등 상태 관리
   createdAt   DateTime   @default(now()) @db.Timestamptz(6)
-  price       Int
 
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   photoCard     PhotoCard @relation(fields: [photoCardId], references: [id])

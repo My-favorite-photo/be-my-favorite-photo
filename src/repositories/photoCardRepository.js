@@ -47,5 +47,5 @@ const photoCardRepository = {
   },
 };
 
-console.log(await prisma.photoCard.findMany({ include: { creator: true, userCards: true } }));
+// console.log(await prisma.photoCard.findMany({ include: { creator: true, userCards: true } }));
 export default photoCardRepository;
