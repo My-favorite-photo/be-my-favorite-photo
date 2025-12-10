@@ -39,6 +39,7 @@ model Trade {
   ownerId     String // 교환 대상자 (원주인)
   saleId      String
   description String? // 교환 제안 메시지
+  userCardId  String
   status      TradeStatus @default(PENDING)
   createdAt   DateTime    @default(now()) @db.Timestamptz(6)
   updatedAt   DateTime    @updatedAt @db.Timestamptz(6)
@@ -46,6 +47,7 @@ model Trade {
   applicant      User           @relation("TradeApplicant", fields: [applicantId], references: [id], onDelete: Cascade)
   owner          User           @relation("TradeOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   sale           Sale           @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  userCard       UserCard       @relation(fields: [userCardId], references: [id], onDelete: Cascade)
   tradeHistories TradeHistory[] // 교환에 포함된 카드들 (양쪽 모두)
 }
 
@@ -58,15 +60,15 @@ enum TradeStatus {
 }
 
 model PhotoCard {
-  id          String  @id @default(cuid())
+  id          String    @id @default(cuid())
   creatorId   String
-  name        String  @db.VarChar(100)
-  imageUrl    String  @db.VarChar(2048)
-  description String? @db.Text
-
+  name        String    @db.VarChar(100)
+  imageUrl    String    @db.VarChar(2048)
+  description String?   @db.Text
+  price       Int
   // 등급과 장르는 Enum으로 관리 (성능 최적화)
-  grade CardGrade
-  genre CardGenre
+  grade       CardGrade
+  genre       CardGenre
 
   totalQuantity Int // 총 발행량
   createdAt     DateTime @default(now()) @db.Timestamptz(6)
@@ -93,6 +95,7 @@ enum CardGenre {
 model Sale {
   id          String     @id @default(cuid())
   sellerId    String
+  userCardId  String
   price       Int
   description String?    @db.Text
   status      SaleStatus @default(ON_SALE)
@@ -100,6 +103,7 @@ model Sale {
   updatedAt   DateTime   @updatedAt @db.Timestamptz(6)
 
   seller        User          @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  userCard      UserCard      @relation(fields: [userCardId], references: [id], onDelete: Cascade)
   trade         Trade[]
   saleHistories SaleHistory[] // 판매에 포함된 카드 목록
 }
@@ -116,13 +120,14 @@ model UserCard {
   photoCardId String
   status      CardStatus @default(OWNED) // 보유중, 판매중, 교환중 등 상태 관리
   createdAt   DateTime   @default(now()) @db.Timestamptz(6)
+  price       Int
 
-  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  photoCard       PhotoCard      @relation(fields: [photoCardId], references: [id])
-  totalQuantity   Int
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photoCard     PhotoCard @relation(fields: [photoCardId], references: [id])
+  totalQuantity Int
   // N:M 관계를 위한 연결
-  saleHistories   SaleHistory[]
-  tradeIHistories TradeHistory[]
+  sale          Sale[]
+  trade         Trade[]
 }
 
 enum CardStatus {
@@ -138,8 +143,7 @@ model TradeHistory {
   userCardId String
   type       TradeItemType // GIVEN(신청자가 주는 것) vs TAKEN(대상자에게 받는 것)
 
-  trade    Trade    @relation(fields: [tradeId], references: [id], onDelete: Cascade)
-  userCard UserCard @relation(fields: [userCardId], references: [id], onDelete: Cascade)
+  trade Trade @relation(fields: [tradeId], references: [id], onDelete: Cascade)
 }
 
 enum TradeItemType {
@@ -152,8 +156,7 @@ model SaleHistory {
   saleId     String
   userCardId String
 
-  sale     Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  userCard UserCard @relation(fields: [userCardId], references: [id], onDelete: Cascade)
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
 }
 
 model Point {
