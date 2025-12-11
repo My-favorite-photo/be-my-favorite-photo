@@ -2,13 +2,11 @@ import { BadRequestException } from '../common/exceptions/badRequestException.js
 import { NotFoundException } from '../common/exceptions/notFoundException.js';
 import { prisma } from '../configs/prismaClient.js';
 import saleRepository from '../repositories/saleRepository.js';
-// 나의 판매 포토카드 - 유저 판매 카드 중 판매상태인 카드 목록 조회
+
 async function registerSale(sellerId, saleData) {
   const { userCardId, quantity, price, description, grade, genre } = saleData;
 
   return prisma.$transaction(async (tx) => {
-    console.log('Seller ID:', sellerId);
-    console.log('PhotoCard ID (from request):', userCardId);
     const userCard = await saleRepository.findUserCard(sellerId, userCardId, tx);
 
     if (!userCard) {
