@@ -1,9 +1,7 @@
 import { prisma } from '../configs/prismaClient.js';
 
-const sellMyPhotoRepository = {
-  findMyPhotoCards(userId, filters) {
-    // 추후 판매방법, 매진여부 필터 기능 추가
-    // 현재는 디자인시안에 검색, 등급, 장르 만있음
+const userCardRepository = {
+  findUserCards(userId, filters) {
     const { keyword, grade, genre } = filters;
 
     const where = {
@@ -52,12 +50,17 @@ const sellMyPhotoRepository = {
     });
   },
 
-  findPhotoCardById(id) {
-    return prisma.photoCard.findUnique({
-      where: { id },
-      include: { user: { select: { nickname: true } } },
+  findUserCardDetail(userId, userCardId) {
+    return prisma.userCard.findUnique({
+      where: {
+        id: userCardId,
+        userId: userId,
+      },
+      include: {
+        photoCard: true,
+      },
     });
   },
 };
 
-export default sellMyPhotoRepository;
+export default userCardRepository;
