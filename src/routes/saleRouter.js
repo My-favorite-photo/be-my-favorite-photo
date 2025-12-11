@@ -9,7 +9,15 @@ saleRouter.post('/', auth.verifyAccessToken, async (req, res, next) => {
   const sellerId = req.user.id;
   const { userCardId, quantity, price, description, grade, genre } = req.body;
 
-  if (!userCardId || !quantity || !price || Number(quantity) <= 0 || Number(price) < 0) {
+  if (
+    !userCardId ||
+    !quantity ||
+    !price ||
+    !grade ||
+    !genre ||
+    Number(quantity) <= 0 ||
+    Number(price) < 0
+  ) {
     return res.status(400).json({ message: '핅수 입력  항목이 누락되었거나 유효하지 않습니다.' });
   }
 
