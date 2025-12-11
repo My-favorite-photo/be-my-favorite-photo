@@ -18,7 +18,7 @@ saleRouter.post('/', auth.verifyAccessToken, async (req, res, next) => {
     Number(quantity) <= 0 ||
     Number(price) < 0
   ) {
-    return res.status(400).json({ message: '핅수 입력  항목이 누락되었거나 유효하지 않습니다.' });
+    return res.status(400).json({ message: '필수 입력  항목이 누락되었거나 유효하지 않습니다.' });
   }
 
   const saleData = {
