@@ -1,4 +1,5 @@
 import { prisma } from '../configs/prismaClient.js';
+import { CardStatus, SaleStatus } from '../generated/enums.js';
 
 const saleRepository = {
   /**
@@ -30,7 +31,7 @@ const saleRepository = {
       data: {
         totalQuantity: newQuantity,
         // 등록된 카드가 남아 있다면 OWNED를 유지하거나, 요구사항에 따라 ON_SALE로 변경 가능
-        status: 'ON_SALE',
+        status: CardStatus.ON_SALE,
       },
     });
   },
@@ -46,7 +47,7 @@ a 트랜잭션 클라이언트
     return tx.sale.create({
       data: {
         ...data,
-        status: 'ON_SALE', // Sale 테이블 상태를 ON_SALE로 설정
+        status: SaleStatus.ON_SALE, // Sale 테이블 상태를 ON_SALE로 설정
       },
     });
   },
