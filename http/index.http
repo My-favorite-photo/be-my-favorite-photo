@@ -7,9 +7,9 @@ POST http://localhost:3005/auth/signup
 Content-Type: application/json
 
 {
-  "email": "test3@gmail.com",
-  "password": "12345678",
-  "nickname": "유리"
+  "email": "pck123@naver.com",
+  "password": "q1w2e3r4t5",
+  "nickname": "창기"
 }
 
 ###
@@ -18,8 +18,8 @@ POST http://localhost:3005/auth/login
 Content-Type: application/json
 
 {
-  "email": "test3@gmail.com",
-  "password": "12345678"
+  "email": "pck123@naver.com",
+  "password": "q1w2e3r4t5"
 }
 
 ### accessToken 재발급 (자동 로그인)
@@ -37,3 +37,11 @@ Authorization: Bearer
 ### 로그아웃
 POST http://localhost:3005/auth/logout
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWlxdDdrdGkwMDAwZ2t6OHlwbWoyaG11IiwiaWF0IjoxNzY0ODIxNjc1LCJleHAiOjE3NjQ4MjUyNzV9.1LcaFV41yR3j57NR8a-CPdz-lz5ZP4QL3VoSVPsSiHo
+
+### 갤러리 조회
+GET http://localhost:3005/cards/my
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWl5MnVzY3MwMDA0cTB6ODQ4ajkweWFxIiwiaWF0IjoxNzY1MjcyMzQ1LCJleHAiOjE3NjU4NzcxNDV9.Tb-z7kwof6hYT4LdzQoR8p68a8xHOTFTAXCeiSANCzA
+
+### 갤러리 상세조회
+GET http://localhost:3005/cards/my/cmiy78kql0003c3z81obpylmc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWl5MnVzY3MwMDA0cTB6ODQ4ajkweWFxIiwiaWF0IjoxNzY1MjcyMzQ1LCJleHAiOjE3NjU4NzcxNDV9.Tb-z7kwof6hYT4LdzQoR8p68a8xHOTFTAXCeiSANCzA
