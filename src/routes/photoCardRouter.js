@@ -4,15 +4,16 @@ import { getCardDetail, getMarketplaceCards } from '../controller/photoCardContr
 import auth from '../middlewares/auth.js';
 import { upload } from '../middlewares/multer.js';
 import photoCardService from '../services/photoCardService.js';
+import userCardService from '../services/userCardService.js';
 
 const photoCardRouter = express.Router();
 
-//유저카드 조회
+//유저 카드 조회
 photoCardRouter.get('/my', auth.verifyAccessToken, async (req, res, next) => {
   try {
     const userId = req.user.id;
-
-    const cards = await photoCardService.getMyCards(userId);
+    const filter = req.query;
+    const cards = await userCardService.getMyCards(userId, filter);
 
     return res.status(200).json({
       success: true,
@@ -30,7 +31,7 @@ photoCardRouter.get('/my/:userCardId', auth.verifyAccessToken, async (req, res, 
     const userId = req.user.id;
     const { userCardId } = req.params;
 
-    const card = await photoCardService.getMyCardDetail(userId, userCardId);
+    const card = await userCardService.getMyCardDetail(userId, userCardId);
 
     return res.status(200).json({
       success: true,
@@ -85,39 +86,10 @@ photoCardRouter.post(
   },
 );
 
-// 전체 카드 도감 조회
-// 마켓플레이스에서 모든 카드 목록을 보여줍니다.
-// photoCardRouter.get('/', async (req, res, next) => {
-//   try {
-//     const filters = req.query;
-//     const cards = await photoCardService.getMarketplaceCards(filters);
-//     res.status(200).json({
-//       success: true,
-//       message: '성공적으로 마켓플레이스 데이터를 불러왔습니다.',
-//       cards,
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+// 포토카드 전체 조회
 photoCardRouter.get('/', getMarketplaceCards);
 
-// 카드 상세 정보 조회
-// Marketplace 에서 특정 카드를 클릭했을 때 상세 정보 페이지
-// photoCardRouter.get('/:photoCardId', async (req, res, next) => {
-//   try {
-//     const { photoCardId } = req.params;
-
-//     const cardDetail = await photoCardService.getCardDetail(photoCardId);
-//     res.status(200).json({
-//       success: true,
-//       message: '마켓플레이스 상세 데이터를 불러왔습니다.',
-//       cardDetail,
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+//  포토카드 상세 조회
 photoCardRouter.get('/:photoCardId', getCardDetail);
 
 export default photoCardRouter;
