@@ -54,10 +54,39 @@ async function getCardDetail(photoCardId) {
   return card;
 }
 
+// 마이갤러리 - 유저카드
+async function getMyCards(userId) {
+  const userCards = await photoCardRepository.findUserCards(userId);
+
+  return userCards.map((card) => ({
+    id: card.id,
+    photoCardId: card.photoCardId,
+    name: card.photoCard.name,
+    grade: card.photoCard.grade,
+    genre: card.photoCard.genre,
+    imageUrl: card.photoCard.imageUrl,
+    price: card.photoCard.price,
+    totalQuantity: card.totalQuantity,
+    status: card.status,
+    createdAt: card.createdAt,
+  }));
+}
+// 마이갤러리 - 유저카드 상세조회
+async function getMyCardDetail(userId, userCardId) {
+  const card = await photoCardRepository.findUserCardDetail(userId, userCardId);
+
+  if (!card) {
+    throw new NotFoundException('해당카드를 찾을수 없습니다!');
+  }
+  return card;
+}
+
 const photoCardService = {
   createNewCard,
   getMarketplaceCards,
   getCardDetail,
+  getMyCards,
+  getMyCardDetail,
 };
 
 export default photoCardService;

@@ -45,6 +45,28 @@ const photoCardRepository = {
       },
     });
   },
+
+  findUserCards(userId) {
+    return prisma.userCard.findMany({
+      where: { userId },
+      include: {
+        photoCard: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  },
+
+  findUserCardDetail(userId, userCardId) {
+    return prisma.userCard.findUnique({
+      where: {
+        id: userCardId,
+        userId: userId,
+      },
+      include: {
+        photoCard: true,
+      },
+    });
+  },
 };
 
 // console.log(await prisma.photoCard.findMany({ include: { creator: true, userCards: true } }));
