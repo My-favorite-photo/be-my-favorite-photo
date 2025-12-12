@@ -72,5 +72,5 @@ const photoCardRepository = {
       },
     });
   },
-
+};
 export default photoCardRepository;
