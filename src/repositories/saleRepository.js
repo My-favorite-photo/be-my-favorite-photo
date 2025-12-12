@@ -1,5 +1,5 @@
 import { prisma } from '../configs/prismaClient.js';
-import { CardStatus, SaleStatus } from '../generated/enums.js';
+import { CardStatus, SaleStatus } from '../generated/enums.ts';
 
 const saleRepository = {
   /**
@@ -48,6 +48,16 @@ a 트랜잭션 클라이언트
       data: {
         ...data,
         status: SaleStatus.ON_SALE, // Sale 테이블 상태를 ON_SALE로 설정
+      },
+    });
+  },
+
+  findActiveSale(sellerId, userCardId, tx = prisma) {
+    return tx.sale.findFirst({
+      where: {
+        sellerId: sellerId,
+        userCardId: userCardId,
+        status: SaleStatus.ON_SALE, // ON_SALE 상태인 레코드만 확인해줍시다.
       },
     });
   },
