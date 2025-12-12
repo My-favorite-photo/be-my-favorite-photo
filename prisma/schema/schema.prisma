@@ -99,19 +99,39 @@ model Sale {
   price       Int
   description String?    @db.Text
   status      SaleStatus @default(ON_SALE)
-  createdAt   DateTime   @default(now()) @db.Timestamptz(6)
-  updatedAt   DateTime   @updatedAt @db.Timestamptz(6)
+
+  grade     SaleGrade
+  genre     SaleGenre
+  quantity  Int // 초기 등록 수량 (예시:10장)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
 
   seller        User          @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   userCard      UserCard      @relation(fields: [userCardId], references: [id], onDelete: Cascade)
   trade         Trade[]
   saleHistories SaleHistory[] // 판매에 포함된 카드 목록
+
+  @@unique([sellerId, userCardId])
 }
 
 enum SaleStatus {
   ON_SALE
   SOLD_OUT
   CANCELLED
+}
+
+enum SaleGrade {
+  COMMON
+  RARE
+  SUPER_RARE
+  LEGENDARY
+}
+
+enum SaleGenre {
+  TRAVEL
+  LANDSCAPE
+  PORTRAIT
+  OBJECT
 }
 
 model UserCard {

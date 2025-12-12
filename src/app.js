@@ -11,6 +11,7 @@ import { cors } from './middlewares/cors.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import authRouter from './routes/authRoute.js';
 import photoCardRouter from './routes/photoCardRouter.js';
+import saleRouter from './routes/saleRouter.js';
 import sellMyPhotoRouter from './routes/sellMyPhotoRouter.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -44,6 +45,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/auth', authRouter);
 app.use('/cards', photoCardRouter);
 app.use('/sells', sellMyPhotoRouter);
+app.use('/sales', saleRouter);
 
 //-------- router module ---------
 
