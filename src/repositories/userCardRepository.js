@@ -6,7 +6,6 @@ const userCardRepository = {
 
     const where = {
       userId: userId,
-      status: { in: ['ON_SALE', 'TRADING'] },
       photoCard: {},
     };
 
