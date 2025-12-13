@@ -60,6 +60,13 @@ const userCardRepository = {
       },
     });
   },
+
+  updateCardStatus(userCardId, status, tx = prisma) {
+    return tx.userCard.update({
+      where: { id: userCardId },
+      data: { status: status },
+    });
+  },
 };
 
 export default userCardRepository;
