@@ -61,6 +61,19 @@ a 트랜잭션 클라이언트
       },
     });
   },
+
+  /**
+   * Sale Id 기준으로 활성화된 Sale 정보를 찾는다.
+   * @param {String} saleId  - 찾고자 하는 Sale 레코드의 고유 ID
+   */
+  findActiveSaleBySaleId(saleId, tx = prisma) {
+    return tx.sale.findFirst({
+      where: {
+        id: saleId,
+        status: SaleStatus.ON_SALE,
+      },
+    });
+  },
 };
 
 export default saleRepository;
