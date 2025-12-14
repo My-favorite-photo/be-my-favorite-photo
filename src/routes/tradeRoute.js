@@ -44,4 +44,21 @@ tradeRouter.post('/:tradeId/cancel', auth.verifyAccessToken, async (req, res, ne
   }
 });
 
+tradeRouter.post('/:tradeId/reject', auth.verifyAccessToken, async (req, res, next) => {
+  try {
+    const ownerId = req.user.id;
+    const { tradeId } = req.params;
+
+    const rejectTrade = await tradeService.rejectTradeOffer(tradeId, ownerId);
+
+    res.status(200).json({
+      success: true,
+      message: '교환 요청을 성공적으로 거절하였습니다.',
+      trade: rejectTrade,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default tradeRouter;

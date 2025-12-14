@@ -81,9 +81,29 @@ async function cancelTradeOffer(tradeId, applicantId) {
   return updateTrade;
 }
 
+async function rejectTradeOffer(tradeId, ownerId) {
+  const trade = await tradeRepository.findTradeById(tradeId);
+
+  if (!trade) {
+    throw new NotFoundException('해당 교환 요청을 찾을 수 없습니다.');
+  }
+
+  if (trade.ownerId !== ownerId) {
+    throw new ForbiddenException('이 교환 요청을 취소할 권한이 없습니다.');
+  }
+
+  if (trade.status !== TradeStatus.PENDING) {
+    throw new ForbiddenException(`현재 상태(${trade.status})에서는 취소할 수 없습니다.`);
+  }
+  //  취소요청 (상태 변경 시킴)
+  const updateTrade = await tradeRepository.updateTradeStatus(tradeId, TradeStatus.REJECTED);
+  return updateTrade;
+}
+
 const tradeService = {
   requestTradeCard,
   cancelTradeOffer,
+  rejectTradeOffer,
 };
 
 export default tradeService;
