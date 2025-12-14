@@ -61,4 +61,21 @@ tradeRouter.post('/:tradeId/reject', auth.verifyAccessToken, async (req, res, ne
   }
 });
 
+tradeRouter.post('/:tradeId/approve', auth.verifyAccessToken, async (req, res, next) => {
+  try {
+    const ownerId = req.user.id;
+    const { tradeId } = req.params;
+
+    const approvedtTrade = await tradeService.approveTradeOffer(tradeId, ownerId);
+
+    res.status(200).json({
+      success: true,
+      message: '교환 요청을 성공적으로 승인하고 거래를 완료하였습니다.',
+      trade: approvedtTrade,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default tradeRouter;
