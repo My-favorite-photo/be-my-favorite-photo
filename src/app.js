@@ -13,6 +13,7 @@ import authRouter from './routes/authRoute.js';
 import photoCardRouter from './routes/photoCardRouter.js';
 import saleRouter from './routes/saleRouter.js';
 import sellMyPhotoRouter from './routes/sellMyPhotoRouter.js';
+import marketRouter from './routes/marketSaleRouter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,6 +47,7 @@ app.use('/auth', authRouter);
 app.use('/cards', photoCardRouter);
 app.use('/sells', sellMyPhotoRouter);
 app.use('/sales', saleRouter);
+app.use('/market', marketRouter);
 
 //-------- router module ---------
 
