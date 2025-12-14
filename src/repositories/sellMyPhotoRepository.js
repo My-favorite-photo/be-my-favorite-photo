@@ -7,7 +7,7 @@ const sellMyPhotoRepository = {
     const { keyword, grade, genre } = filters;
 
     const where = {
-      userId: userId,
+      userId: userId, // 특정 userId가 판매 중인 카드만
       status: { in: ['ON_SALE', 'TRADING'] },
       photoCard: {},
     };

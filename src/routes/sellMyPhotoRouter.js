@@ -7,7 +7,8 @@ const sellMyPhotoRouter = express.Router();
 
 sellMyPhotoRouter.get('/', auth.verifyAccessToken, async (req, res, next) => {
   try {
-    const { userId } = req.user;
+    // const { userId } = req.user;
+    const userId = req.user.id;
     const filter = req.query;
     const cards = await sellMyPhotoCardService.getMarketplaceCards(userId, filter);
 
