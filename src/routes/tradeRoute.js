@@ -1,7 +1,6 @@
 import express from 'express';
 
 import auth from '../middlewares/auth.js';
-import saleService from '../services/saleService.js';
 import tradeService from '../services/tradeService.js';
 
 const tradeRouter = express.Router();
@@ -22,6 +21,23 @@ tradeRouter.post('/', auth.verifyAccessToken, async (req, res, next) => {
     res.status(201).json({
       message: '교환 요청이 성공적으로 전송되었습니다.',
       trade: newTrade,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+tradeRouter.post('/:tradeId/cancel', auth.verifyAccessToken, async (req, res, next) => {
+  try {
+    const applicantId = req.user.id;
+    const { tradeId } = req.params;
+
+    const cancelTrade = await tradeService.cancelTradeOffer(tradeId, applicantId);
+
+    res.status(200).json({
+      success: true,
+      message: '교환 요청이 성공적으로 취소되었습니다.',
+      trade: cancelTrade,
     });
   } catch (error) {
     next(error);

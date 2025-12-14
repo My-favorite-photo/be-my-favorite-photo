@@ -2,7 +2,7 @@ import { BadRequestException } from '../common/exceptions/badRequestException.js
 import { ForbiddenException } from '../common/exceptions/forbiddenException.js';
 import { NotFoundException } from '../common/exceptions/notFoundException.js';
 import { prisma } from '../configs/prismaClient.js';
-import { CardStatus, TradeItemType } from '../generated/enums.ts';
+import { CardStatus, TradeItemType, TradeStatus } from '../generated/enums.ts';
 import saleRepository from '../repositories/saleRepository.js';
 import tradeRepository from '../repositories/tradeRepository.js';
 import userCardRepository from '../repositories/userCardRepository.js';
@@ -62,8 +62,28 @@ async function requestTradeCard({ applicantId, saleId, offeredUserCardId, descri
   });
 }
 
+async function cancelTradeOffer(tradeId, applicantId) {
+  const trade = await tradeRepository.findTradeById(tradeId);
+
+  if (!trade) {
+    throw new NotFoundException('해당 교환 요청을 찾을 수 없습니다.');
+  }
+
+  if (trade.applicantId !== applicantId) {
+    throw new ForbiddenException('이 교환 요청을 취소할 권한이 없습니다.');
+  }
+
+  if (trade.status !== TradeStatus.PENDING) {
+    throw new ForbiddenException(`현재 상태(${trade.status})에서는 취소할 수 없습니다.`);
+  }
+  //  취소요청 (상태 변경 시킴)
+  const updateTrade = await tradeRepository.updateTradeStatus(tradeId, TradeStatus.CANCELLED);
+  return updateTrade;
+}
+
 const tradeService = {
   requestTradeCard,
+  cancelTradeOffer,
 };
 
 export default tradeService;

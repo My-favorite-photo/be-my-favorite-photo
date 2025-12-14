@@ -33,6 +33,24 @@ const tradeRepository = {
       },
     });
   },
+
+  findTradeById(tradeId) {
+    return prisma.trade.findUnique({
+      where: { id: tradeId },
+    });
+  },
+
+  updateTradeStatus(tradeId, newStatus) {
+    return prisma.trade.update({
+      where: { id: tradeId },
+      data: {
+        status: newStatus,
+      },
+      include: {
+        applicant: { select: { nickname: true } },
+      },
+    });
+  },
 };
 
 export default tradeRepository;
