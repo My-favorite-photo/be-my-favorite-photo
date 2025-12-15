@@ -59,7 +59,9 @@ const sellMyPhotoRepository = {
         user: {
           select: { nickname: true },
         },
-        photoCard: true,
+        photoCard: {
+          include: { userCards: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
