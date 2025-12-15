@@ -33,7 +33,13 @@ const marketSaleRepository = {
         gradeArray = grade.split(',');
       }
       if (gradeArray.length > 0) {
-        where.grade = { in: gradeArray };
+        where.userCard = {
+          ...where.userCard,
+          photoCard: {
+            ...where.userCard?.photoCard,
+            grade: { in: gradeArray },
+          },
+        };
       }
     }
 
@@ -45,7 +51,13 @@ const marketSaleRepository = {
         genreArray = genre.split(',');
       }
       if (genreArray.length > 0) {
-        where.genre = { in: genreArray };
+        where.userCard = {
+          ...where.userCard,
+          photoCard: {
+            ...where.userCard?.photoCard,
+            genre: { in: genreArray },
+          },
+        };
       }
     }
 

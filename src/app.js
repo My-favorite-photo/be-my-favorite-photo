@@ -49,6 +49,8 @@ app.use('/auth', authRouter);
 app.use('/cards', photoCardRouter);
 app.use('/sells', sellMyPhotoRouter);
 app.use('/sales', saleRouter);
+app.use('/events', eventRouter);
+app.use('/purchases', purchaseRouter);
 app.use('/market', marketRouter);
 app.use('/events', eventRouter);
 app.use('/purchases', purchaseRouter);
