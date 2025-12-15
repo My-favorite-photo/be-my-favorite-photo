@@ -25,6 +25,20 @@ async function registerSale(sellerId, saleData) {
       );
     }
 
+    //실제 판매에 사용할 카드(유저카드) 확보
+    const saleUserCards = await tx.userCard.findMany({
+      where: {
+        userId: sellerId,
+        photoCardId: userCard.photoCardId,
+        status: 'OWNED',
+      },
+      take: quantity,
+    });
+
+    if (saleUserCards.length !== quantity) {
+      throw new BadRequestException('판매 가능한 카드 수량이 부족합니다.');
+    }
+
     // 검사완료후 차감액션
     const newQuantity = userCard.totalQuantity - quantity;
 
@@ -43,6 +57,24 @@ async function registerSale(sellerId, saleData) {
       },
       tx,
     );
+
+    //세일 히스토리 생성
+    await tx.saleHistory.createMany({
+      data: saleUserCards.map((card) => ({
+        saleId: newSale.id,
+        userCardId: card.id,
+      })),
+    });
+
+    //판매 중인 카드 상태 변경
+    await tx.userCard.updateMany({
+      where: {
+        id: { in: saleUserCards.map((c) => c.id) },
+      },
+      data: {
+        status: 'ON_SALE',
+      },
+    });
 
     return newSale;
   });

@@ -11,6 +11,24 @@ const authRepository = {
     });
   },
 
+  findByEmailWithPoint(email) {
+    return prisma.user.findUnique({
+      where: { email },
+      include: {
+        point: true,
+      },
+    });
+  },
+
+  findByIdWithPoint(id) {
+    return prisma.user.findUnique({
+      where: { id },
+      include: {
+        point: true,
+      },
+    });
+  },
+
   createUser(data) {
     return prisma.user.create({
       data,

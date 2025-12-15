@@ -61,6 +61,29 @@ a 트랜잭션 클라이언트
       },
     });
   },
+
+  findSaleByPhotoCardId(photoCardId) {
+    return prisma.sale.findFirst({
+      where: {
+        status: 'ON_SALE',
+        userCard: {
+          photoCardId: photoCardId,
+        },
+      },
+      include: {
+        userCard: {
+          include: {
+            photoCard: {
+              include: {
+                creator: { select: { nickname: true } },
+                userCards: { select: { totalQuantity: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+  },
 };
 
 export default saleRepository;
