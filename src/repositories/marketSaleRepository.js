@@ -49,6 +49,7 @@ const marketSaleRepository = {
       }
     }
 
+    // 매진 여부
     if (status) {
       // 판매 중
       if (status === 'ON_SALE' || status === 'CANCELLED') {

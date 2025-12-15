@@ -4,7 +4,7 @@ const sellMyPhotoRepository = {
   findMyPhotoCards(userId, filters) {
     // 추후 판매방법, 매진여부 필터 기능 추가
     // 현재는 디자인시안에 검색, 등급, 장르 만있음
-    const { keyword, grade, genre } = filters;
+    const { keyword, grade, genre, status } = filters;
 
     const where = {
       userId: userId, // 특정 userId가 판매 중인 카드만
@@ -40,6 +40,19 @@ const sellMyPhotoRepository = {
       }
     }
 
+    // 판매 방법
+    if (status) {
+      let statusArray = [];
+      if (Array.isArray(status)) {
+        statusArray = status;
+      } else if (typeof status === 'string') {
+        statusArray = status.split(',');
+      }
+      if (statusArray.length > 0) {
+        where.status = { in: statusArray };
+      }
+    }
+
     return prisma.userCard.findMany({
       where,
       include: {
@@ -55,7 +68,9 @@ const sellMyPhotoRepository = {
   findPhotoCardById(id) {
     return prisma.photoCard.findUnique({
       where: { id },
-      include: { user: { select: { nickname: true } } },
+      include: {
+        user: { select: { nickname: true } },
+      },
     });
   },
 };
