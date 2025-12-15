@@ -1,29 +1,68 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+import { BadRequestException } from '../common/exceptions/badRequestException.js';
+import { ConflictException } from '../common/exceptions/conflictException.js';
+import { InternalServerException } from '../common/exceptions/internalServerException.js';
+import { prisma } from '../configs/prismaClient.js';
 import authRepository from '../repositories/authRepository.js';
 
-//회원가입
+/**
+ *
+ * @param {*} user
+ * 회원가입 로직 트랜잭션으로 수정 추후 로그인, 토큰 관련 리펙토링 예정
+ */
+
 async function createSignup(user) {
   try {
-    const existedUser = await authRepository.findByEmail(user.email);
-    if (existedUser) {
-      const error = new Error('존재하는 이메일 입니다.');
-      error.code = 409;
-      error.data = { email: user.email };
-      throw error;
+    if (!user.email || !user.password || !user.nickname) {
+      throw new BadRequestException('이메일, 비밀번호 , 닉네임이 누락되었습니다.');
     }
-    const hashedPassword = await hashPassword(user.password);
-    const createdUser = await authRepository.createUser({
-      ...user,
-      password: hashedPassword,
+
+    const createdUser = await prisma.$transaction(async (tx) => {
+      const existedUser = await tx.user.findUnique({
+        where: { email: user.email },
+      });
+
+      if (existedUser) {
+        throw new ConflictException('이미 존재하는 이메일입니다.');
+      }
+
+      const hashedPassword = await hashPassword(user.password);
+
+      const newUser = await tx.user.create({
+        data: {
+          email: user.email,
+          password: hashedPassword,
+          nickname: user.nickname,
+        },
+      });
+
+      await tx.point.create({
+        data: {
+          userId: newUser.id,
+          balance: 500,
+        },
+      });
+
+      await tx.pointHistory.create({
+        data: {
+          userId: newUser.id,
+          amount: 500,
+          type: 'JOIN_BONUS',
+          description: '회원가입 포인트',
+        },
+      });
+
+      return newUser;
     });
+
     return filterSensitiveUserData(createdUser);
   } catch (error) {
-    if (error.code === 409) throw error;
-    const customError = new Error('데이터베이스 작업 중 오류가 발생했습니다.');
-    customError.code = 500;
-    throw customError;
+    if (error instanceof BadRequestException) throw error;
+    if (error instanceof ConflictException) throw error;
+
+    throw new InternalServerException('회원가입 처리 오류 발생');
   }
 }
 
@@ -36,19 +75,35 @@ function filterSensitiveUserData(user) {
   return rest;
 }
 
-//로그인
+// 로그인
 async function getUser(email, password) {
   try {
-    const user = await authRepository.findByEmail(email);
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        point: true,
+      },
+    });
+
     if (!user) {
       const error = new Error('존재하지 않는 이메일 입니다.');
       error.code = 401;
       throw error;
     }
+
     await verifyPassword(password, user.password);
-    return filterSensitiveUserData(user);
+
+    return {
+      id: user.id,
+      email: user.email,
+      nickname: user.nickname,
+      balance: user.point?.balance ?? 0,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   } catch (error) {
     if (error.code === 401) throw error;
+
     const customError = new Error('데이터베이스 작업 중 오류가 발생했습니다.');
     customError.code = 500;
     throw customError;
@@ -109,12 +164,40 @@ async function refreshToken(oldRefreshToken) {
     throw err;
   }
 }
+
+async function getMe(userId) {
+  try {
+    const user = await authRepository.findByIdWithPoint(userId);
+
+    if (!user) {
+      const error = new Error('존재하지 않는 사용자입니다.');
+      error.code = 401;
+      throw error;
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      nickname: user.nickname,
+      balance: user.point?.balance ?? 0,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  } catch (error) {
+    if (error.code === 401) throw error;
+
+    const customError = new Error('사용자 정보를 가져오는 중 오류가 발생했습니다.');
+    customError.code = 500;
+    throw customError;
+  }
+}
 const authService = {
   createSignup,
   getUser,
   createToken,
   updateUser,
   refreshToken,
+  getMe,
 };
 
 export default authService;
