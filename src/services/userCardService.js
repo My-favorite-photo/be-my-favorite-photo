@@ -3,7 +3,9 @@ import userCardRepository from '../repositories/userCardRepository.js';
 
 // 마이갤러리 - 유저카드
 async function getMyCards(userId, filters) {
-  return userCardRepository.findUserCards(userId, filters);
+  const cards = await userCardRepository.findUserCards(userId, filters);
+
+  return cards ?? [];
 }
 
 // 마이갤러리 - 유저카드 상세조회

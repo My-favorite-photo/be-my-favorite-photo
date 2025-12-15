@@ -10,7 +10,9 @@ import { specs } from './configs/swagger.js';
 import { cors } from './middlewares/cors.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import authRouter from './routes/authRoute.js';
+import eventRouter from './routes/eventRoute.js';
 import photoCardRouter from './routes/photoCardRouter.js';
+import purchaseRouter from './routes/purchaseRoute.js';
 import saleRouter from './routes/saleRouter.js';
 import sellMyPhotoRouter from './routes/sellMyPhotoRouter.js';
 import marketRouter from './routes/marketSaleRouter.js';
@@ -48,6 +50,8 @@ app.use('/cards', photoCardRouter);
 app.use('/sells', sellMyPhotoRouter);
 app.use('/sales', saleRouter);
 app.use('/market', marketRouter);
+app.use('/events', eventRouter);
+app.use('/purchases', purchaseRouter);
 
 //-------- router module ---------
 
