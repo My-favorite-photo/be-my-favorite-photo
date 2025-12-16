@@ -123,11 +123,11 @@ async function approveTradeOffer(tradeId, ownerId) {
     }
 
     if (trade.ownerId !== ownerId) {
-      throw new ForbiddenException('이 교환 요청을 취소할 권한이 없습니다.');
+      throw new ForbiddenException('이 교환 요청을 승인할 권한이 없습니다.');
     }
 
     if (trade.status !== TradeStatus.PENDING) {
-      throw new ForbiddenException(`현재 상태(${trade.status})에서는 취소할 수 없습니다.`);
+      throw new ForbiddenException(`현재 상태(${trade.status})에서는 승인할 수 없습니다.`);
     }
 
     const completedTrade = await tradeRepository.approveTradeTransaction(tradeId, trade.saleId);
