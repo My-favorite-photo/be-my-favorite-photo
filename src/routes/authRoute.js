@@ -67,18 +67,20 @@ authRouter.post('/login', async (req, res, next) => {
 
 authRouter.post('/refresh', async (req, res, next) => {
   try {
+    if (!req.body) {
+      return res.status(400).json({ message: '요청 본문이 없습니다.' });
+    }
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      const error = new Error('Refresh token 이 필요합니다.');
-      error.code = 401;
-      throw error;
+      return res.status(401).json({
+        message: 'Refresh token 이 필요합니다.',
+      });
     }
-    const { newAccessToken, newRefreshToken } = await authService.refreshToken(refreshToken);
-
+    const tokens = await authService.refreshToken(refreshToken);
     return res.json({
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
+      accessToken: tokens.newAccessToken,
+      refreshToken: tokens.newRefreshToken,
     });
   } catch (error) {
     next(error);
@@ -102,9 +104,7 @@ authRouter.get('/me', authMiddleware.verifyAccessToken, async (req, res, next) =
 authRouter.post('/logout', authMiddleware.verifyAccessToken, async (req, res, next) => {
   try {
     const userId = req.user.id;
-
     await authRepository.updateUser(userId, { refreshToken: null });
-
     return res.json({
       nickname: req.user.nickname,
       message: '로그아웃 성공',
