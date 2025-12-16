@@ -3,9 +3,9 @@ import { ConflictException } from '../common/exceptions/conflictException.js';
 import { ForbiddenException } from '../common/exceptions/forbiddenException.js';
 import { NotFoundException } from '../common/exceptions/notFoundException.js';
 import { prisma } from '../configs/prismaClient.js';
+import { SaleStatus } from '../generated/enums.ts';
 import pointService from './pointService.js';
 
-console.log('DATABASE_URL:', process.env.DATABASE_URL);
 async function purchase({ saleId, buyerId, quantity }) {
   if (!saleId || !buyerId) {
     throw new BadRequestException('saleId, buyerId는 필수입니다.');
@@ -15,9 +15,6 @@ async function purchase({ saleId, buyerId, quantity }) {
   }
 
   return prisma.$transaction(async (tx) => {
-    //Sale 조회
-    console.log('purchase saleId:', saleId);
-
     const sale = await tx.sale.findUnique({
       where: { id: saleId },
       select: {
@@ -25,11 +22,9 @@ async function purchase({ saleId, buyerId, quantity }) {
         sellerId: true,
         price: true,
         status: true,
-        quantity: true,
+        remainingQuantity: true,
       },
     });
-    console.log('found sale:', sale);
-
     if (!sale) {
       throw new NotFoundException('존재하지 않는 판매글입니다!');
     }
@@ -39,17 +34,17 @@ async function purchase({ saleId, buyerId, quantity }) {
     if (sale.sellerId === buyerId) {
       throw new ForbiddenException('본인의 상품은 구매할 수 없습니다!');
     }
-    if (sale.quantity < quantity) {
+    if (sale.remainingQuantity < quantity) {
       throw new ConflictException('판매 수량이 부족합니다!');
     }
 
     const dec = await tx.sale.updateMany({
       where: {
         id: saleId,
-        status: 'ON_SALE',
-        quantity: { gte: quantity },
+        status: SaleStatus.ON_SALE,
+        remainingQuantity: { gte: quantity },
       },
-      data: { quantity: { decrement: quantity } },
+      data: { remainingQuantity: { decrement: quantity } },
     });
     if (dec.count !== 1) {
       throw new ConflictException('구매 처리 중 판매 상태가 변경되었습니다.');
@@ -104,7 +99,7 @@ async function purchase({ saleId, buyerId, quantity }) {
     //솔드아웃 처리
     const left = await tx.sale.findUnique({
       where: { id: saleId },
-      select: { quantity: true },
+      select: { remainingQuantity: true },
     });
     if (left?.quantity === 0) {
       await tx.sale.update({
