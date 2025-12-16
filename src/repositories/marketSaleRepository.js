@@ -101,6 +101,20 @@ const marketSaleRepository = {
             photoCard: true,
           },
         },
+        trade: {
+          include: {
+            tradeHistories: {
+              include: {
+                userCard: {
+                  include: {
+                    photoCard: true,
+                  },
+                },
+              },
+            },
+            applicant: true,
+          },
+        },
       },
     });
   },
