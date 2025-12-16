@@ -1,89 +1,29 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "TradeStatus" AS ENUM ('PENDING', 'ACCEPTED', 'REJECTED', 'CANCELLED', 'COMPLETED');
 
-  - You are about to drop the `notifications` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `photo_cards` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `point_histories` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `points` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `sale_items` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `sales` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `trade_items` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `trades` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `user_cards` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `users` table. If the table is not empty, all the data it contains will be lost.
+-- CreateEnum
+CREATE TYPE "CardGrade" AS ENUM ('COMMON', 'RARE', 'SUPER_RARE', 'LEGENDARY');
 
-*/
--- DropForeignKey
-ALTER TABLE "notifications" DROP CONSTRAINT "notifications_userId_fkey";
+-- CreateEnum
+CREATE TYPE "CardGenre" AS ENUM ('TRAVEL', 'LANDSCAPE', 'PORTRAIT', 'OBJECT');
 
--- DropForeignKey
-ALTER TABLE "photo_cards" DROP CONSTRAINT "photo_cards_creatorId_fkey";
+-- CreateEnum
+CREATE TYPE "SaleStatus" AS ENUM ('ON_SALE', 'SOLD_OUT', 'CANCELLED');
 
--- DropForeignKey
-ALTER TABLE "point_histories" DROP CONSTRAINT "point_histories_userId_fkey";
+-- CreateEnum
+CREATE TYPE "SaleGrade" AS ENUM ('COMMON', 'RARE', 'SUPER_RARE', 'LEGENDARY');
 
--- DropForeignKey
-ALTER TABLE "points" DROP CONSTRAINT "points_userId_fkey";
+-- CreateEnum
+CREATE TYPE "SaleGenre" AS ENUM ('TRAVEL', 'LANDSCAPE', 'PORTRAIT', 'OBJECT');
 
--- DropForeignKey
-ALTER TABLE "sale_items" DROP CONSTRAINT "sale_items_saleId_fkey";
+-- CreateEnum
+CREATE TYPE "CardStatus" AS ENUM ('OWNED', 'ON_SALE', 'TRADING', 'BURNED');
 
--- DropForeignKey
-ALTER TABLE "sale_items" DROP CONSTRAINT "sale_items_userCardId_fkey";
+-- CreateEnum
+CREATE TYPE "TradeItemType" AS ENUM ('OFFERED', 'TARGET');
 
--- DropForeignKey
-ALTER TABLE "sales" DROP CONSTRAINT "sales_sellerId_fkey";
-
--- DropForeignKey
-ALTER TABLE "trade_items" DROP CONSTRAINT "trade_items_tradeId_fkey";
-
--- DropForeignKey
-ALTER TABLE "trade_items" DROP CONSTRAINT "trade_items_userCardId_fkey";
-
--- DropForeignKey
-ALTER TABLE "trades" DROP CONSTRAINT "trades_applicantId_fkey";
-
--- DropForeignKey
-ALTER TABLE "trades" DROP CONSTRAINT "trades_ownerId_fkey";
-
--- DropForeignKey
-ALTER TABLE "trades" DROP CONSTRAINT "trades_saleId_fkey";
-
--- DropForeignKey
-ALTER TABLE "user_cards" DROP CONSTRAINT "user_cards_photoCardId_fkey";
-
--- DropForeignKey
-ALTER TABLE "user_cards" DROP CONSTRAINT "user_cards_userId_fkey";
-
--- DropTable
-DROP TABLE "notifications";
-
--- DropTable
-DROP TABLE "photo_cards";
-
--- DropTable
-DROP TABLE "point_histories";
-
--- DropTable
-DROP TABLE "points";
-
--- DropTable
-DROP TABLE "sale_items";
-
--- DropTable
-DROP TABLE "sales";
-
--- DropTable
-DROP TABLE "trade_items";
-
--- DropTable
-DROP TABLE "trades";
-
--- DropTable
-DROP TABLE "user_cards";
-
--- DropTable
-DROP TABLE "users";
+-- CreateEnum
+CREATE TYPE "PointType" AS ENUM ('JOIN_BONUS', 'DAILY_CHECK_IN', 'PURCHASE_REWARD', 'SALE_INCOME', 'BUY_SPEND', 'EXCHANGE_FEE', 'REFUND');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -105,6 +45,7 @@ CREATE TABLE "Trade" (
     "ownerId" TEXT NOT NULL,
     "saleId" TEXT NOT NULL,
     "description" TEXT,
+    "userCardId" TEXT NOT NULL,
     "status" "TradeStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(6) NOT NULL,
@@ -121,6 +62,7 @@ CREATE TABLE "PhotoCard" (
     "description" TEXT,
     "grade" "CardGrade" NOT NULL,
     "genre" "CardGenre" NOT NULL,
+    "price" INTEGER NOT NULL DEFAULT 0,
     "totalQuantity" INTEGER NOT NULL,
     "createdAt" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(6) NOT NULL,
@@ -132,9 +74,13 @@ CREATE TABLE "PhotoCard" (
 CREATE TABLE "Sale" (
     "id" TEXT NOT NULL,
     "sellerId" TEXT NOT NULL,
+    "userCardId" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "description" TEXT,
     "status" "SaleStatus" NOT NULL DEFAULT 'ON_SALE',
+    "grade" "SaleGrade" NOT NULL,
+    "genre" "SaleGenre" NOT NULL,
+    "quantity" INTEGER NOT NULL,
     "createdAt" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(6) NOT NULL,
 
@@ -146,6 +92,7 @@ CREATE TABLE "UserCard" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "photoCardId" TEXT NOT NULL,
+    "price" INTEGER NOT NULL DEFAULT 0,
     "status" "CardStatus" NOT NULL DEFAULT 'OWNED',
     "createdAt" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "totalQuantity" INTEGER NOT NULL,
@@ -212,6 +159,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "User_nickname_key" ON "User"("nickname");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Sale_sellerId_userCardId_key" ON "Sale"("sellerId", "userCardId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Point_userId_key" ON "Point"("userId");
 
 -- AddForeignKey
@@ -224,10 +174,16 @@ ALTER TABLE "Trade" ADD CONSTRAINT "Trade_ownerId_fkey" FOREIGN KEY ("ownerId") 
 ALTER TABLE "Trade" ADD CONSTRAINT "Trade_saleId_fkey" FOREIGN KEY ("saleId") REFERENCES "Sale"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Trade" ADD CONSTRAINT "Trade_userCardId_fkey" FOREIGN KEY ("userCardId") REFERENCES "UserCard"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "PhotoCard" ADD CONSTRAINT "PhotoCard_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Sale" ADD CONSTRAINT "Sale_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Sale" ADD CONSTRAINT "Sale_userCardId_fkey" FOREIGN KEY ("userCardId") REFERENCES "UserCard"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserCard" ADD CONSTRAINT "UserCard_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -239,13 +195,7 @@ ALTER TABLE "UserCard" ADD CONSTRAINT "UserCard_photoCardId_fkey" FOREIGN KEY ("
 ALTER TABLE "TradeHistory" ADD CONSTRAINT "TradeHistory_tradeId_fkey" FOREIGN KEY ("tradeId") REFERENCES "Trade"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TradeHistory" ADD CONSTRAINT "TradeHistory_userCardId_fkey" FOREIGN KEY ("userCardId") REFERENCES "UserCard"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "SaleHistory" ADD CONSTRAINT "SaleHistory_saleId_fkey" FOREIGN KEY ("saleId") REFERENCES "Sale"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "SaleHistory" ADD CONSTRAINT "SaleHistory_userCardId_fkey" FOREIGN KEY ("userCardId") REFERENCES "UserCard"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Point" ADD CONSTRAINT "Point_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

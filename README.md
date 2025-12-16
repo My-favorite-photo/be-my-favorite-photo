@@ -1,24 +1,17 @@
 
-// (나의 최애의 포토 디자인 사진 (팀 , 최애의 포토 이미지))
-// 백엔드 용으로 리드미 공사중. ..
-
 ---
 ## 목차
   1. [프로젝트 개요](#overview) 
   2. [팀원 소개](#team-members)
-  3. [FE 시스템 아키텍처](#fe-system-architecture)
+  3. [BE 아키텍처](#be-architecture)
   4. [기술 스택](#tech-stack)
   5. [주요 기능](#key-features)
   6. [팀 문서](#team-documents)
-  7. [폴더 구조](#directory-structure)
-  8. [백엔드 구경해보기](#check-out-the-backend)
-  9. [팀원 개발 리포트](#team-member-development-reports)
+  7. [프론트 구경해보기](#check-out-the-frontend)
 ---
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Next.js](https://img.shields.io/badge/Next.js-16.0.4-000000?style=flat&logo=next.js)
-![React](https://img.shields.io/badge/React-19.2.0-61DAFB?style=flat&logo=react)
 
 ## Overview
 
@@ -41,12 +34,11 @@
 | **Team Leader** | **김윤기** | [@youn_gi_kim](https://github.com/rklpoi5678) |
 | **FE/BE Developer** | **박창기** | [@changki](https://github.com/p-changki) |
 | **FE/BE Developer** | **이유리** | [@yoorrll](https://github.com/yoorrll) |
-| **FE Developer** | **오마린** | [@oh1marin](https://github.com/oh1marin) |
+| **FE/QA Developer** | **오마린** | [@oh1marin](https://github.com/oh1marin) |
 
 ---
-## FE System Architecture
-
-(아키텍처 사진)
+## BE Architecture
+<img width="1596" height="979" alt="Web App Reference Architecture" src="https://github.com/user-attachments/assets/992d21c2-01df-4bef-8368-3a9a0feb988a" />
 
 ---
 
@@ -54,26 +46,33 @@
 
 본 프로젝트는 최신 웹 트렌드를 반영하여 **Next.js 16 (App Router)** 과 **React 19** 환경에서 구축되었습니다.
 
-### **Frontend Core**
-![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+### **Backend Core**
+![Express Badge](https://img.shields.io/badge/Express-000?logo=express&logoColor=fff&style=for-the-badge)![Node.js Badge](https://img.shields.io/badge/Node.js-5FA04E?logo=nodedotjs&logoColor=fff&style=for-the-badge)
 
-### **Styling**
-![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+### **Authentication**
+![Passport Badge](https://img.shields.io/badge/Passport-34E27A?logo=passport&logoColor=000&style=for-the-badge)
+![JSON Web Tokens Badge](https://img.shields.io/badge/JSON%20Web%20Tokens-000?logo=jsonwebtokens&logoColor=fff&style=for-the-badge)
 
-**Utilities**: `clsx`, `tailwind-merge`, `class-variance-authority (CVA)`
+### **Validation**
+![Zod Badge](https://img.shields.io/badge/Zod-408AFF?logo=zod&logoColor=fff&style=for-the-badge)
 
-**UI Components**: Headless UI (`@headlessui/react`)
+### **Database & ORM**
+![Prisma Badge](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=fff&style=for-the-badge)
+![PostgreSQL Badge](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=fff&style=for-the-badge)
 
-### **Form & state**
-![React Hook Form](https://img.shields.io/badge/React%20Hook%20Form-%23EC5990.svg?style=for-the-badge&logo=reacthookform&logoColor=white) ![Zod](https://img.shields.io/badge/zod-%233068b7.svg?style=for-the-badge&logo=zod&logoColor=white) ![React Query](https://img.shields.io/badge/-React%20Query-FF4154?style=for-the-badge&logo=react%20query&logoColor=white) ![JWT-docoded](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
+### **File Handling**
+Multer
+
+### **API DOCS**
+![Swagger Badge](https://img.shields.io/badge/Swagger-85EA2D?logo=swagger&logoColor=000&style=for-the-badge)
 
 ### **Dev Tools & CI/CD**
 ![Prettier](https://img.shields.io/badge/prettier-%23192a32?style=for-the-badge&logo=prettier&logoColor=dc524a)
 ![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white)
-![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white)
+![Render Badge](https://img.shields.io/badge/Render-000?logo=render&logoColor=fff&style=for-the-badge)
 ![NPM](https://img.shields.io/badge/NPM-%23CB3837.svg?style=for-the-badge&logo=npm&logoColor=white)
 
-**other**: husky,lint-stage 
+**other**: husky,lint-stage,nodemon,dotenv
 
 ---
 
@@ -103,21 +102,11 @@
 ## Team Documents
 
 
-노션 주소
-미로 주소
+노션
+https://www.notion.so/2b662f1437fd806eb6a6dc792d704f26
+미로
+https://miro.com/app/board/uXjVGfn7wg8=/
 
-## Directory Structure
 
-```bash
-📦 src
-├── 📂 app              # Next.js App Router 페이지
-├── 📂 components       # 재사용 가능한 공통 컴포넌트 (Atomic Design 지향)
-│   ├── 📂 ui           # 버튼, 인풋 등 기본 UI 요소
-│   └── 📂 common       # 헤더, 푸터 등 레이아웃 요소
-├── 📂 hooks            # 커스텀 React Hooks
-├── 📂 libs              # 유틸리티 함수 및 설정 (axios, utils 등)
-```
-## Check out the Backend
-[나의 최애의 포토 백엔드](https://github.com/My-favorite-photo/be-my-favorite-photo)
-
-## Team Member Development Reports
+## Check out the Frontend
+[나의 최애의 포토 백엔드](https://github.com/My-favorite-photo/fe-my-favorite-photo)

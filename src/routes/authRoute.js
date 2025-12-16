@@ -55,13 +55,11 @@ authRouter.post('/login', async (req, res, next) => {
     const accessToken = authService.createToken(user);
     const refreshToken = authService.createToken(user, 'refresh');
     await authService.updateUser(user.id, { refreshToken });
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
+    res.json({
+      user,
+      accessToken,
+      refreshToken,
     });
-    res.json({ user, accessToken });
   } catch (error) {
     next(error);
   }
@@ -69,33 +67,36 @@ authRouter.post('/login', async (req, res, next) => {
 
 authRouter.post('/refresh', async (req, res, next) => {
   try {
-    const { refreshToken } = req.cookies;
+    const { refreshToken } = req.body;
 
     if (!refreshToken) {
       const error = new Error('Refresh token 이 필요합니다.');
       error.code = 401;
       throw error;
     }
-
     const { newAccessToken, newRefreshToken } = await authService.refreshToken(refreshToken);
 
-    res.cookie('refreshToken', newRefreshToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      path: '/',
+    return res.json({
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
     });
-
-    return res.json({ accessToken: newAccessToken });
   } catch (error) {
     next(error);
   }
 });
 
-authRouter.get('/me', authMiddleware.verifyAccessToken, async (req, res) => {
-  return res.json({
-    user: req.user,
-  });
+authRouter.get('/me', authMiddleware.verifyAccessToken, async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await authService.getMe(userId);
+
+    return res.json({
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 authRouter.post('/logout', authMiddleware.verifyAccessToken, async (req, res, next) => {
@@ -104,13 +105,10 @@ authRouter.post('/logout', authMiddleware.verifyAccessToken, async (req, res, ne
 
     await authRepository.updateUser(userId, { refreshToken: null });
 
-    res.clearCookie('refreshToken', {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
+    return res.json({
+      nickname: req.user.nickname,
+      message: '로그아웃 성공',
     });
-
-    return res.json({ nickname: req.user.nickname, message: '로그아웃 성공' });
   } catch (error) {
     next(error);
   }

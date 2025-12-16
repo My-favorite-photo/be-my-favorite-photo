@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getCardDetail, getMarketplaceCards } from '../controller/photoCardController.js';
+import { getCardDetail, getMarketplaceCards } from '../controllers/photoCardController.js';
 import auth from '../middlewares/auth.js';
 import { upload } from '../middlewares/multer.js';
 import photoCardService from '../services/photoCardService.js';

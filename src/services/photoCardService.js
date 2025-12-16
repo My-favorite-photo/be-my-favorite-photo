@@ -1,6 +1,7 @@
 import { NotFoundException } from '../common/exceptions/notFoundException.js';
 import { prisma } from '../configs/prismaClient.js';
 import photoCardRepository from '../repositories/photoCardRepository.js';
+import saleRepository from '../repositories/saleRepository.js';
 
 // 새 카드 생성
 async function createNewCard(creatorId, data) {
@@ -43,15 +44,26 @@ async function getMarketplaceCards(filters) {
   return photoCardRepository.findPhotoCards(filters);
 }
 
-// 마켓플레이스 - 카드 상세 조회
-async function getCardDetail(photoCardId, userId) {
-  const card = await photoCardRepository.findPhotoCardById(photoCardId, userId);
+async function getCardDetail(photoCardId) {
+  const card = await photoCardRepository.findPhotoCardById(photoCardId);
 
   if (!card) {
-    throw new NotFoundException('카드를 찾을수 없습니다.');
+    throw new NotFoundException('카드를 찾을 수 없습니다.');
   }
 
-  return card;
+  const sale = await saleRepository.findSaleByPhotoCardId(photoCardId);
+
+  return {
+    ...card,
+    sale: sale
+      ? {
+          saleId: sale.id,
+          price: sale.price,
+          quantity: sale.quantity,
+          sellerId: sale.sellerId,
+        }
+      : null,
+  };
 }
 
 const photoCardService = {
