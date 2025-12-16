@@ -75,6 +75,21 @@ async function cancelTradeOffer(tradeId, applicantId) {
   if (trade.status !== TradeStatus.PENDING) {
     throw new ForbiddenException(`현재 상태(${trade.status})에서는 취소할 수 없습니다.`);
   }
+
+  const tradeWithHistory = await prisma.trade.findUnique({
+    where: { id: tradeId },
+    include: {
+      tradeHistories: { where: { type: TradeItemType.OFFERED } },
+    },
+  });
+
+  if (tradeWithHistory?.tradeHistories[0]?.userCardId) {
+    await userCardRepository.updateCardStatus(
+      tradeWithHistory.tradeHistories[0].userCardId,
+      CardStatus.OWNED,
+    );
+  }
+
   //  취소요청 (상태 변경 시킴)
   const updateTrade = await tradeRepository.updateTradeStatus(tradeId, TradeStatus.CANCELLED);
   return updateTrade;
