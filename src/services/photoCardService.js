@@ -44,8 +44,8 @@ async function getMarketplaceCards(filters) {
 }
 
 // 마켓플레이스 - 카드 상세 조회
-async function getCardDetail(photoCardId) {
-  const card = await photoCardRepository.findPhotoCardById(photoCardId);
+async function getCardDetail(photoCardId, userId) {
+  const card = await photoCardRepository.findPhotoCardById(photoCardId, userId);
 
   if (!card) {
     throw new NotFoundException('카드를 찾을수 없습니다.');

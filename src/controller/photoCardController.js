@@ -21,8 +21,9 @@ export async function getMarketplaceCards(req, res, next) {
 export async function getCardDetail(req, res, next) {
   try {
     const { photoCardId } = req.params;
+    const userId = req.user.id;
 
-    const cardDetail = await photoCardService.getCardDetail(photoCardId);
+    const cardDetail = await photoCardService.getCardDetail(photoCardId, userId);
 
     res.status(200).json({
       success: true,

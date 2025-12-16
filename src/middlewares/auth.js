@@ -74,8 +74,6 @@ function validateEmailAndPassword(req, res, next) {
   next();
 }
 
-
-
 export default {
   verifyAccessToken,
   verifyRefreshToken,
