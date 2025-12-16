@@ -72,7 +72,7 @@ const tradeRepository = {
       // 판매글 정보 조회 (saleId 기준)
       const sale = await tx.sale.findUnique({
         where: { id: saleId },
-        select: { userCardId: true, sellerId: true, quantity: true, status: true },
+        select: { userCardId: true, sellerId: true, remainingQuantity: true, status: true },
       });
 
       if (!trade || !sale) throw new NotFoundException('trade or sale 데이터를 찾을수 없습니다.');
@@ -81,7 +81,7 @@ const tradeRepository = {
         throw new ForbiddenException(`Trade가 PENDING 상태가 아닙니다: ${trade.status}`);
       }
 
-      if (sale.quantity < 1 || sale.status !== SaleStatus.ON_SALE) {
+      if (sale.remainingQuantity < 1 || sale.status !== SaleStatus.ON_SALE) {
         throw new ForbiddenException('판매글이 내려간 상태거나 sold out 되었습니다.');
       }
 
@@ -109,11 +109,11 @@ const tradeRepository = {
       });
 
       //  판매글 재고 차감
-      const newSaleStatus = sale.quantity === 1 ? SaleStatus.SOLD_OUT : SaleStatus.ON_SALE;
+      const newSaleStatus = sale.remainingQuantity === 1 ? SaleStatus.SOLD_OUT : SaleStatus.ON_SALE;
       await tx.sale.update({
         where: { id: saleId },
         data: {
-          quantity: { decrement: 1 },
+          remainingQuantity: { decrement: 1 },
           // 재고가 1이면 또 1개 감소 후 0 -> SOLD_OUT으로 업데이트
           status: newSaleStatus,
         },
