@@ -23,12 +23,11 @@ async function requestTradeCard({ applicantId, saleId, offeredUserCardId, descri
   }
 
   if (offeredCard.status !== CardStatus.OWNED) {
-    throw new BadRequestException('제시된 카드는 현재 판매 또는 교환 중이 아닙니다.');
+    throw new BadRequestException('제시된 카드는 현재 판매 또는 교환 중이 입니다.');
   }
 
   // 교환 대상 Sale  정보 확인
   const targetSale = await saleRepository.findActiveSaleBySaleId(saleId);
-  console.log(targetSale);
   if (!targetSale || targetSale.status !== 'ON_SALE') {
     throw new NotFoundException('교환 대상 카드가 판매 중이 아니거나 존재하지 않습니다.');
   }
