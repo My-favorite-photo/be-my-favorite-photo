@@ -73,8 +73,6 @@ const photoCardRepository = {
       },
     });
 
-    console.log(sale);
-
     if (!sale) return null;
 
     const isSeller = sale.sellerId === userId;
