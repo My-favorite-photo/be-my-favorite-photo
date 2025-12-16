@@ -11,11 +11,12 @@ import { cors } from './middlewares/cors.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import authRouter from './routes/authRoute.js';
 import eventRouter from './routes/eventRoute.js';
+import marketRouter from './routes/marketSaleRouter.js';
 import photoCardRouter from './routes/photoCardRouter.js';
 import purchaseRouter from './routes/purchaseRoute.js';
 import saleRouter from './routes/saleRouter.js';
 import sellMyPhotoRouter from './routes/sellMyPhotoRouter.js';
-import marketRouter from './routes/marketSaleRouter.js';
+import tradeRouter from './routes/tradeRoute.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,11 +50,10 @@ app.use('/auth', authRouter);
 app.use('/cards', photoCardRouter);
 app.use('/sells', sellMyPhotoRouter);
 app.use('/sales', saleRouter);
+app.use('/trades', tradeRouter);
 app.use('/events', eventRouter);
 app.use('/purchases', purchaseRouter);
 app.use('/market', marketRouter);
-app.use('/events', eventRouter);
-app.use('/purchases', purchaseRouter);
 
 //-------- router module ---------
 

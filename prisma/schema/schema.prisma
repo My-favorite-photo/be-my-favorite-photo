@@ -100,11 +100,13 @@ model Sale {
   description String?    @db.Text
   status      SaleStatus @default(ON_SALE)
 
-  grade     SaleGrade
-  genre     SaleGenre
-  quantity  Int // 초기 등록 수량 (예시:10장)
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+  grade             SaleGrade
+  genre             SaleGenre
+  quantity          Int       @default(0) // 초기 등록 수량 (예시:10장)
+  remainingQuantity Int       @default(0) // 잔여 수량
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   seller        User          @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   userCard      UserCard      @relation(fields: [userCardId], references: [id], onDelete: Cascade)
@@ -142,12 +144,14 @@ model UserCard {
   status      CardStatus @default(OWNED) // 보유중, 판매중, 교환중 등 상태 관리
   createdAt   DateTime   @default(now()) @db.Timestamptz(6)
 
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  photoCard     PhotoCard @relation(fields: [photoCardId], references: [id])
-  totalQuantity Int
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photoCard      PhotoCard      @relation(fields: [photoCardId], references: [id])
+  totalQuantity  Int
   // N:M 관계를 위한 연결
-  sale          Sale[]
-  trade         Trade[]
+  sale           Sale[]
+  trade          Trade[]
+  tradeHistories TradeHistory[]
+  saleHistories  SaleHistory[]
 }
 
 enum CardStatus {
@@ -163,7 +167,8 @@ model TradeHistory {
   userCardId String
   type       TradeItemType // GIVEN(신청자가 주는 것) vs TAKEN(대상자에게 받는 것)
 
-  trade Trade @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  trade    Trade    @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  userCard UserCard @relation(fields: [userCardId], references: [id], onDelete: Cascade)
 }
 
 enum TradeItemType {
@@ -175,8 +180,10 @@ model SaleHistory {
   id         String @id @default(cuid())
   saleId     String
   userCardId String
+  quantity   Int
 
-  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  sale     Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  userCard UserCard @relation(fields: [userCardId], references: [id], onDelete: Cascade)
 }
 
 model Point {

@@ -1,4 +1,5 @@
 import { prisma } from '../configs/prismaClient.js';
+import { TradeItemType, TradeStatus } from '../generated/enums.ts';
 
 const photoCardRepository = {
   createPhotoCard(cardData) {
@@ -53,22 +54,63 @@ const photoCardRepository = {
     if (sort === 'high') orderBy = { price: 'desc' };
     if (sort === 'latest') orderBy = { createdAt: 'desc' };
 
-    return prisma.photoCard.findMany({
+    return prisma.sale.findMany({
       where,
       orderBy,
       include: {
-        creator: { select: { nickname: true } },
-        userCards: { select: { status: true, totalQuantity: true } },
+        seller: { select: { nickname: true } },
+        // userCard: { select: { status: true, totalQuantity: true } },
+        trade: true,
       },
     });
   },
 
-  findPhotoCardById(id) {
-    return prisma.photoCard.findUnique({
-      where: { id },
+  async findPhotoCardById(saleId, userId) {
+    const sale = await prisma.sale.findUnique({
+      where: { id: saleId },
+      select: {
+        sellerId: true,
+      },
+    });
+
+    if (!sale) return null;
+
+    const isSeller = sale.sellerId === userId;
+
+    let tradeWhereCondition = {};
+
+    if (isSeller) {
+      // seller
+      tradeWhereCondition = {
+        status: TradeStatus.PENDING,
+      };
+    } else {
+      // buyer
+      tradeWhereCondition = {
+        applicantId: userId,
+        status: TradeStatus.PENDING,
+      };
+    }
+
+    return await prisma.sale.findUnique({
+      where: { id: saleId },
       include: {
-        creator: { select: { nickname: true } },
-        userCards: { select: { totalQuantity: true } },
+        seller: { select: { nickname: true } },
+        userCard: { include: { photoCard: true } },
+        trade: {
+          where: tradeWhereCondition,
+          include: {
+            applicant: { select: { nickname: true } },
+            tradeHistories: {
+              where: {
+                type: TradeItemType.OFFERED,
+              },
+              include: {
+                userCard: { include: { photoCard: true } },
+              },
+            },
+          },
+        },
       },
     });
   },
