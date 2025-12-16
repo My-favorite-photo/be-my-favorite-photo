@@ -115,6 +115,7 @@ CREATE TABLE "SaleHistory" (
     "id" TEXT NOT NULL,
     "saleId" TEXT NOT NULL,
     "userCardId" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
 
     CONSTRAINT "SaleHistory_pkey" PRIMARY KEY ("id")
 );
@@ -195,7 +196,13 @@ ALTER TABLE "UserCard" ADD CONSTRAINT "UserCard_photoCardId_fkey" FOREIGN KEY ("
 ALTER TABLE "TradeHistory" ADD CONSTRAINT "TradeHistory_tradeId_fkey" FOREIGN KEY ("tradeId") REFERENCES "Trade"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "TradeHistory" ADD CONSTRAINT "TradeHistory_userCardId_fkey" FOREIGN KEY ("userCardId") REFERENCES "UserCard"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "SaleHistory" ADD CONSTRAINT "SaleHistory_saleId_fkey" FOREIGN KEY ("saleId") REFERENCES "Sale"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SaleHistory" ADD CONSTRAINT "SaleHistory_userCardId_fkey" FOREIGN KEY ("userCardId") REFERENCES "UserCard"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Point" ADD CONSTRAINT "Point_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

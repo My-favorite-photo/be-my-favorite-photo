@@ -100,11 +100,13 @@ model Sale {
   description String?    @db.Text
   status      SaleStatus @default(ON_SALE)
 
-  grade     SaleGrade
-  genre     SaleGenre
-  quantity  Int // 초기 등록 수량 (예시:10장)
-  createdAt DateTime  @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+  grade             SaleGrade
+  genre             SaleGenre
+  quantity          Int // 초기 등록 수량 (예시:10장)
+  remainingQuantity Int // 잔여 수량
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   seller        User          @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   userCard      UserCard      @relation(fields: [userCardId], references: [id], onDelete: Cascade)
@@ -149,6 +151,7 @@ model UserCard {
   sale           Sale[]
   trade          Trade[]
   tradeHistories TradeHistory[]
+  saleHistories  SaleHistory[]
 }
 
 enum CardStatus {
@@ -177,8 +180,10 @@ model SaleHistory {
   id         String @id @default(cuid())
   saleId     String
   userCardId String
+  quantity   Int
 
-  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  sale     Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  userCard UserCard @relation(fields: [userCardId], references: [id], onDelete: Cascade)
 }
 
 model Point {
