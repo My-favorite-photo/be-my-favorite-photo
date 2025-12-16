@@ -103,11 +103,11 @@ async function rejectTradeOffer(tradeId, ownerId) {
   }
 
   if (trade.ownerId !== ownerId) {
-    throw new ForbiddenException('이 교환 요청을 취소할 권한이 없습니다.');
+    throw new ForbiddenException('이 교환 요청을 거절할 권한이 없습니다.');
   }
 
   if (trade.status !== TradeStatus.PENDING) {
-    throw new ForbiddenException(`현재 상태(${trade.status})에서는 취소할 수 없습니다.`);
+    throw new ForbiddenException(`현재 상태(${trade.status})에서는 거절할 수 없습니다.`);
   }
   //  취소요청 (상태 변경 시킴)
   const updateTrade = await tradeRepository.updateTradeStatus(tradeId, TradeStatus.REJECTED);
