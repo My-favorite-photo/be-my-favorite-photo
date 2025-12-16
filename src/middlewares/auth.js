@@ -12,7 +12,6 @@ function throwUnauthorizedError() {
 async function verifyAccessToken(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
-
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throwUnauthorizedError();
     }

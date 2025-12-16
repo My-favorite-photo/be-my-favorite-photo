@@ -24,11 +24,15 @@ Content-Type: application/json
 
 ### accessToken 재발급 (자동 로그인)
 POST http://localhost:3005/auth/refresh
-Cookie:refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWlxdDdrdGkwMDAwZ2t6OHlwbWoyaG11IiwiaWF0IjoxNzY0ODIxMDcyLCJleHAiOjE3NjQ4MjQ2NzJ9.FmXR8A5YOfGw_1kadan2Cdl4_fssY18Igz8upDGIizg; Path=/; HttpOnly; Secure; SameSite=None
+Content-Type: application/json
+
+{
+  "refreshToken":
+}
 
 ### 로그인한 사용자 정보 불러오기
 GET http://localhost:3005/auth/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWlxdDdrdGkwMDAwZ2t6OHlwbWoyaG11IiwiaWF0IjoxNzY0ODIxNjc1LCJleHAiOjE3NjQ4MjUyNzV9.1LcaFV41yR3j57NR8a-CPdz-lz5ZP4QL3VoSVPsSiHo
+Authorization: Bearer 
 
 ### /auth/me 오류 테스트
 GET http://localhost:3005/auth/me
@@ -36,12 +40,12 @@ Authorization: Bearer
 
 ### 로그아웃
 POST http://localhost:3005/auth/logout
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWlxdDdrdGkwMDAwZ2t6OHlwbWoyaG11IiwiaWF0IjoxNzY0ODIxNjc1LCJleHAiOjE3NjQ4MjUyNzV9.1LcaFV41yR3j57NR8a-CPdz-lz5ZP4QL3VoSVPsSiHo
+Authorization: Bearer 
 
 ### 갤러리 조회
 GET http://localhost:3005/cards/my
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWl5MnVzY3MwMDA0cTB6ODQ4ajkweWFxIiwiaWF0IjoxNzY1MjcyMzQ1LCJleHAiOjE3NjU4NzcxNDV9.Tb-z7kwof6hYT4LdzQoR8p68a8xHOTFTAXCeiSANCzA
+Authorization: Bearer 
 
 ### 갤러리 상세조회
 GET http://localhost:3005/cards/my/cmiy78kql0003c3z81obpylmc
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWl5MnVzY3MwMDA0cTB6ODQ4ajkweWFxIiwiaWF0IjoxNzY1MjcyMzQ1LCJleHAiOjE3NjU4NzcxNDV9.Tb-z7kwof6hYT4LdzQoR8p68a8xHOTFTAXCeiSANCzA
+Authorization: Bearer 
