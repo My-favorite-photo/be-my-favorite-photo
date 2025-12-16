@@ -90,6 +90,6 @@ photoCardRouter.post(
 photoCardRouter.get('/', getMarketplaceCards);
 
 //  포토카드 상세 조회
-photoCardRouter.get('/:photoCardId', auth.verifyAccessToken, getCardDetail);
+photoCardRouter.get('/:photoCardId', getCardDetail);
 
 export default photoCardRouter;
