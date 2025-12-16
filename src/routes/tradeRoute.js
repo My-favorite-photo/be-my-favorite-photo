@@ -8,12 +8,11 @@ const tradeRouter = express.Router();
 tradeRouter.post('/', auth.verifyAccessToken, async (req, res, next) => {
   const applicantId = req.user.id;
   const { saleId, offeredUserCardId, description } = req.body;
-  const DUMMY_SALE_ID = 'cmj2epnf40005qisb4meyq8lk';
 
   try {
     const newTrade = await tradeService.requestTradeCard({
       applicantId,
-      saleId: DUMMY_SALE_ID,
+      saleId,
       offeredUserCardId,
       description,
     });
