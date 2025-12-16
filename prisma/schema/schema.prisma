@@ -102,8 +102,8 @@ model Sale {
 
   grade             SaleGrade
   genre             SaleGenre
-  quantity          Int // 초기 등록 수량 (예시:10장)
-  remainingQuantity Int // 잔여 수량
+  quantity          Int       @default(0) // 초기 등록 수량 (예시:10장)
+  remainingQuantity Int       @default(0) // 잔여 수량
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
