@@ -155,10 +155,13 @@ async function refreshToken(oldRefreshToken) {
     const newAccessToken = createToken(safeUser);
     const newRefreshToken = createToken(safeUser, 'refresh');
 
-    await authRepository.updateUser(user.id, { refreshToken: newRefreshToken });
+    await authRepository.updateUser(user.id, {
+      refreshToken: newRefreshToken,
+    });
 
     return { newAccessToken, newRefreshToken };
   } catch (error) {
+    if (error.code) throw error;
     const err = new Error('Unauthorized');
     err.code = 401;
     throw err;
