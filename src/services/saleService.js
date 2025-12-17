@@ -1,7 +1,10 @@
 import { BadRequestException } from '../common/exceptions/badRequestException.js';
+import { ConflictException } from '../common/exceptions/conflictException.js';
+import { ForbiddenException } from '../common/exceptions/forbiddenException.js';
 import { NotFoundException } from '../common/exceptions/notFoundException.js';
+import { UnAuthorizedException } from '../common/exceptions/unAuthorizedException.js';
 import { prisma } from '../configs/prismaClient.js';
-import { CardStatus } from '../generated/enums.ts';
+import { CardStatus, SaleStatus } from '../generated/enums.ts';
 import saleRepository from '../repositories/saleRepository.js';
 
 async function registerSale(sellerId, saleData) {
@@ -72,8 +75,69 @@ async function registerSale(sellerId, saleData) {
   });
 }
 
+async function closeSale(saleId, sellerId) {
+  const sale = await saleRepository.findActiveSaleBySaleId(saleId);
+  if (!sale) {
+    throw new NotFoundException('존재하지 않는 판매글입니다.');
+  }
+
+  if (sale.sellerId !== sellerId) {
+    throw new ForbiddenException('판매 종료 권한이 없습니다.');
+  }
+
+  if (sale.status === SaleStatus.CANCELLED) {
+    throw new ConflictException('이미 종료된 판매 입니다.');
+  }
+
+  console.log('Sale', sale);
+  return await saleRepository.cancelAndRestoreStock(
+    saleId,
+    sellerId,
+    sale.userCardId,
+    sale.quantity,
+  );
+}
+
+async function updateSale(saleId, sellerId, updateData) {
+  const sale = await saleRepository.findActiveSaleBySaleId(saleId);
+  if (!sale) throw new NotFoundException('존재하지 않는 판매글입니다.');
+
+  if (sale.sellerId !== sellerId) {
+    throw new UnAuthorizedException('수정 권한이 없습니다.');
+  }
+
+  let quantityDiff = 0;
+  let newRemainingQuantity = undefined;
+
+  if (updateData.quantity != undefined) {
+    const soldQuantity = sale.quantity - sale.remainingQuantity;
+    if (updateData.quantity < soldQuantity) {
+      throw new BadRequestException(
+        `이미 ${soldQuantity}장이 판매되어 그 이하로 수량을 줄일 수 없습니다.`,
+      );
+    }
+    // 차이 계산: 기존 4장 -> 수정 1장 일 경우 diff는 3 (3장을 인벤토리로 환원)
+    quantityDiff = sale.quantity - updateData.quantity;
+    // 새남은 수량 = 새 전체 수량 - 이미 팔린 수량
+    newRemainingQuantity = updateData.quantity - soldQuantity;
+  }
+
+  const data = {
+    price: updateData.price,
+    quantity: updateData.quantity,
+    remainingQuantity: newRemainingQuantity,
+    description: updateData.description,
+    grade: updateData.grade,
+    genre: updateData.genre,
+  };
+
+  return await saleRepository.updateWithStockRecovery(saleId, sale.userCardId, data, quantityDiff);
+}
+
 const saleService = {
   registerSale,
+  closeSale,
+  updateSale,
 };
 
 export default saleService;
