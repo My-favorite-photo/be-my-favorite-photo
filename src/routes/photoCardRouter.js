@@ -68,12 +68,6 @@ photoCardRouter.post(
         price,
       };
 
-      // if (!cardData) {
-      //   console.error('카드데이터가 없습니다.');
-      // }
-
-      console.log('Final cardData:', cardData);
-
       const result = await photoCardService.createNewCard(creatorId, cardData);
       res.status(201).json({
         success: true,
