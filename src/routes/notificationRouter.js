@@ -5,7 +5,7 @@ import { authMiddleware } from '../middlewares/authMiddleware.js';
  const notificationRouter = express.Router();
 
  notificationRouter.get('/', authMiddleware, async (req, res, next) => {
-   try {;
+   try {
     const userId = req.user.id;
     const { limit } = req.query;
 
