@@ -1,0 +1,86 @@
+paths:
+  /sales:
+    post:
+      tags:
+        - Sales
+      summary: 판매 등록 (마켓에 내놓기)
+      description: 소유한 포토카드를 지정한 수량과 가격으로 판매 등록합니다.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userCardId, quantity, price, grade, genre]
+              properties:
+                userCardId:
+                  type: string
+                  description: 유저가 소유한 카드(UserCard)의 ID
+                quantity:
+                  type: integer
+                  example: 5
+                price:
+                  type: number
+                  example: 15000
+                description:
+                  type: string
+                  example: '상태 아주 좋아요!'
+                grade:
+                  type: string
+                  example: 'RARE'
+                genre:
+                  type: string
+                  example: 'TRAVEL'
+      responses:
+        201:
+          description: 판매 등록 성공
+        400:
+          description: 재고 부족 또는 유효하지 않은 입력값
+
+  /sales/{saleId}/close:
+    post:
+      tags:
+        - Sales
+      summary: 판매 조기 종료
+      description: 진행 중인 판매를 중단하고 남은 수량을 회수합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: saleId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 종료 완료
+
+  /sales/{saleId}/update:
+    patch:
+      tags:
+        - Sales
+      summary: 판매 정보 수정
+      description: 가격이나 설명을 수정합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: saleId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price:
+                  type: number
+                description:
+                  type: string
+      responses:
+        200:
+          description: 수정 성공
