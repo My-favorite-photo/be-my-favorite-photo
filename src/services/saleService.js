@@ -2,7 +2,6 @@ import { BadRequestException } from '../common/exceptions/badRequestException.js
 import { ConflictException } from '../common/exceptions/conflictException.js';
 import { ForbiddenException } from '../common/exceptions/forbiddenException.js';
 import { NotFoundException } from '../common/exceptions/notFoundException.js';
-import { UnAuthorizedException } from '../common/exceptions/unAuthorizedException.js';
 import { prisma } from '../configs/prismaClient.js';
 import { CardStatus, SaleStatus } from '../generated/enums.ts';
 import saleRepository from '../repositories/saleRepository.js';
@@ -102,7 +101,7 @@ async function updateSale(saleId, sellerId, updateData) {
   if (!sale) throw new NotFoundException('존재하지 않는 판매글입니다.');
 
   if (sale.sellerId !== sellerId) {
-    throw new UnAuthorizedException('수정 권한이 없습니다.');
+    throw new ForbiddenException('수정 권한이 없습니다.');
   }
 
   let quantityDiff = 0;
