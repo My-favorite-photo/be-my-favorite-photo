@@ -124,8 +124,6 @@ async function rejectTradeOffer(tradeId, ownerId) {
     throw new ForbiddenException(`현재 상태(${trade.status})에서는 거절할 수 없습니다.`);
 
   return prisma.$transaction(async (tx) => {
-    const updateTrade = await tradeRepository.updateTradeStatus(tradeId, TradeStatus.REJECTED, tx);
-
     //  알림
     const tradeDetail = await tx.trade.findUnique({
       where: { id: tradeId },
@@ -140,6 +138,20 @@ async function rejectTradeOffer(tradeId, ownerId) {
       },
       tx,
     );
+    const tradeWithHistory = await tx.trade.findUnique({
+      where: { id: tradeId },
+      include: { tradeHistories: { where: { type: TradeItemType.OFFERED } } },
+    });
+
+    if (tradeWithHistory?.tradeHistories[0]?.userCardId) {
+      await userCardRepository.updateCardStatus(
+        tradeWithHistory.tradeHistories[0].userCardId,
+        CardStatus.OWNED,
+        tx,
+      );
+    }
+
+    const updateTrade = await tradeRepository.deleteTradeStatus(tradeId, tx);
 
     return updateTrade;
   });
