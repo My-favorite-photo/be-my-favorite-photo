@@ -97,6 +97,59 @@ a 트랜잭션 클라이언트
       },
     });
   },
+
+  /**
+   * 판매 내리기용 레포
+   */
+  cancelAndRestoreStock: async (saleId, sellerId, cardId, quantity) => {
+    return (
+      await prisma.$transaction([
+        prisma.userCard.updateMany({
+          where: {
+            userId: sellerId,
+            id: cardId,
+          },
+          data: {
+            totalQuantity: { increment: quantity },
+            status: CardStatus.OWNED,
+          },
+        }),
+      ]),
+      prisma.sale.delete({
+        where: { id: saleId },
+      })
+    );
+  },
+
+  /**
+   * 판매글 수정하기 레포
+   */
+  updateWithStockRecovery: async (saleId, userCardId, updateData, diff) => {
+    return await prisma.$transaction([
+      prisma.userCard.update({
+        where: { id: userCardId },
+        data: {
+          totalQuantity: { increment: diff }, // 양수 면 증가, 음수면 감소
+        },
+      }),
+
+      prisma.sale.update({
+        where: { id: saleId },
+        data: {
+          // undefined인 필드는 제외하고 실제 값이 있는 필드만 업데이트
+          ...(updateData.price !== undefined && { price: updateData.price }),
+          ...(updateData.quantity !== undefined && { quantity: updateData.quantity }),
+          ...(updateData.remainingQuantity !== undefined && {
+            remainingQuantity: updateData.remainingQuantity,
+          }),
+          ...(updateData.description !== undefined && { description: updateData.description }),
+          ...(updateData.grade !== undefined && { grade: updateData.grade }),
+          ...(updateData.genre !== undefined && { genre: updateData.genre }),
+          updatedAt: new Date(),
+        },
+      }),
+    ]);
+  },
 };
 
 export default saleRepository;
