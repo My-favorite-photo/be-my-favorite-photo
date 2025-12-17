@@ -1,4 +1,5 @@
 import express from 'express';
+
 import marketSaleService from '../services/marketSaleService.js';
 
 const marketRouter = express.Router();
