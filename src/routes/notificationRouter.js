@@ -2,11 +2,10 @@ import express from 'express';
 import notificationRepository from '../repositories/notificationRepository.js';
 
 const notificationRouter = express.Router();
-
-notificationRouter.get('/', async (req, res, next) => {
-  try {
-    const { userId, limit } = req.query;
-    if (!userId) return res.status(400).json({ error: 'userId 필요' });
+ notificationRouter.get('/', authMiddleware, async (req, res, next) => {
+   try {
+    const userId = req.user.id;
+    const { limit } = req.query;
 
     const take = Number(limit) || 5;
 
