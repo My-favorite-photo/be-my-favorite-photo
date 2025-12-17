@@ -80,7 +80,8 @@ CREATE TABLE "Sale" (
     "status" "SaleStatus" NOT NULL DEFAULT 'ON_SALE',
     "grade" "SaleGrade" NOT NULL,
     "genre" "SaleGenre" NOT NULL,
-    "quantity" INTEGER NOT NULL,
+    "quantity" INTEGER NOT NULL DEFAULT 0,
+    "remainingQuantity" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(6) NOT NULL,
 

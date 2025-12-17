@@ -14,6 +14,7 @@ import eventRouter from './routes/eventRoute.js';
 import marketRouter from './routes/marketSaleRouter.js';
 import photoCardRouter from './routes/photoCardRouter.js';
 import purchaseRouter from './routes/purchaseRoute.js';
+import randomPointRouter from './routes/randomPointRoute.js';
 import saleRouter from './routes/saleRouter.js';
 import sellMyPhotoRouter from './routes/sellMyPhotoRouter.js';
 import tradeRouter from './routes/tradeRoute.js';
@@ -54,6 +55,7 @@ app.use('/trades', tradeRouter);
 app.use('/events', eventRouter);
 app.use('/purchases', purchaseRouter);
 app.use('/market', marketRouter);
+app.use('/points/random', randomPointRouter);
 
 //-------- router module ---------
 

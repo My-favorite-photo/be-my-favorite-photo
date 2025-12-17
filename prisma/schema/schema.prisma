@@ -16,6 +16,7 @@ model User {
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  lastRandomAt DateTime? @db.Timestamptz(6)
 
   // 관계 설정
   point          Point?
@@ -214,6 +215,7 @@ enum PointType {
   BUY_SPEND
   EXCHANGE_FEE
   REFUND
+  RANDOM_EVENT
 }
 
 model Notification {
