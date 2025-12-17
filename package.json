@@ -35,7 +35,7 @@
     "migrate:deploy": "npx prisma migrate deploy",
     "generate": "npx prisma generate",
     "copy:prisma": "cp -r src/generated dist/src",
-    "copy:assets": "cp -r src/swaggerDocs dist/swaggerDocs"
+    "copy:assets": "cp -r src/swaggerDocs dist/src/swaggerDocs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.953.0",
