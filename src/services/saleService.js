@@ -89,7 +89,6 @@ async function closeSale(saleId, sellerId) {
     throw new ConflictException('이미 종료된 판매 입니다.');
   }
 
-  console.log('Sale', sale);
   return await saleRepository.cancelAndRestoreStock(
     saleId,
     sellerId,
