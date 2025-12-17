@@ -66,7 +66,13 @@ const tradeRepository = {
       // 판매글 정보 조회 (saleId 기준)
       const sale = await tx.sale.findUnique({
         where: { id: saleId },
-        select: { userCardId: true, sellerId: true, remainingQuantity: true, status: true },
+        select: {
+          userCardId: true,
+          sellerId: true,
+          remainingQuantity: true,
+          status: true,
+          userCard: { select: { photoCardId: true } },
+        },
       });
 
       if (!trade || !sale) throw new NotFoundException('trade or sale 데이터를 찾을수 없습니다.');
@@ -94,6 +100,7 @@ const tradeRepository = {
         where: { userId: sale.sellerId, photoCardId: buyerCard.photoCardId },
       });
 
+      console.log(existingCardForSeller);
       // 이미 있으면 수량만 +1
       if (existingCardForSeller) {
         await tx.userCard.update({
@@ -123,6 +130,9 @@ const tradeRepository = {
         where: { userId: trade.applicantId, photoCardId: sale.userCard.photoCardId },
       });
 
+      console.log('----------');
+      console.log('existingCardForBuyer', existingCardForBuyer);
+
       // 이미 있으면 수량만 +1
       if (existingCardForBuyer) {
         await tx.userCard.update({
@@ -151,11 +161,11 @@ const tradeRepository = {
       });
 
       // 교환 을 삭제
-      const updatedTrade = await tx.trade.delete({
+      await tx.trade.delete({
         where: { id: tradeId },
       });
 
-      return updatedTrade;
+      return { success: true, tradeId };
     });
     return result;
   },
