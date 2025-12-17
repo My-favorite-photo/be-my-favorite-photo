@@ -50,11 +50,9 @@ photoCardRouter.post(
   auth.verifyAccessToken,
   upload.single('uploads'),
   async (req, res, next) => {
-    console.log('start');
     try {
       const imageUrl = req.file.key;
       const publicImageUrl = `${process.env.CLOUD_FLARE_R2_PUBLIC_API}/${imageUrl}`;
-      console.log(publicImageUrl);
       const creatorId = req.user.id;
       const rawGrade = req.body.grade.toUpperCase();
       const rawGenre = req.body.genre.toUpperCase();
