@@ -1,0 +1,89 @@
+paths:
+  /trades:
+    post:
+      tags:
+        - Trades
+      summary: 교환 요청 보내기
+      description: |
+        마켓에 올라온 판매글(saleId)에 대해 본인의 카드(offeredUserCardId)를 제시하며 교환을 제안합니다.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [saleId, offeredUserCardId]
+              properties:
+                saleId:
+                  type: string
+                  description: 교환을 원하는 대상 판매글 ID
+                offeredUserCardId:
+                  type: string
+                  description: 내가 제시할 내 소유의 카드 ID
+                description:
+                  type: string
+                  example: '제 카드랑 교환하실래요? 상태 좋습니다.'
+      responses:
+        201:
+          description: 교환 요청 성공
+        400:
+          description: 본인 카드 제안 불가 또는 잘못된 접근
+
+  /trades/{tradeId}/cancel:
+    post:
+      tags:
+        - Trades
+      summary: 교환 요청 취소
+      description: 교환을 신청했던 사람이 승인되기 전 제안을 취소합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: tradeId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 취소 완료
+
+  /trades/{tradeId}/reject:
+    post:
+      tags:
+        - Trades
+      summary: 교환 요청 거절
+      description: 판매글 소유자가 들어온 교환 제안을 거절합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: tradeId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 거절 완료
+
+  /trades/{tradeId}/approve:
+    post:
+      tags:
+        - Trades
+      summary: 교환 요청 승인 (거래 완료)
+      description: |
+        판매글 소유자가 교환 제안을 수락합니다. 
+        이 호출 즉시 양측의 카드 소유권이 교환되며 거래가 완료됩니다.
+        서로 1장씩의 교환입니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: tradeId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 승인 및 교환 완료
