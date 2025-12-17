@@ -47,4 +47,38 @@ saleRouter.post('/', auth.verifyAccessToken, async (req, res, next) => {
   }
 });
 
+saleRouter.post('/:saleId/close', auth.verifyAccessToken, async (req, res, next) => {
+  try {
+    const { saleId } = req.params;
+    const sellerId = req.user.id;
+
+    const result = await saleService.closeSale(saleId, sellerId);
+
+    res.status(200).json({
+      success: true,
+      message: '판매가 종료되었습니다.',
+      result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+saleRouter.patch('/:saleId/update', auth.verifyAccessToken, async (req, res, next) => {
+  try {
+    const { saleId } = req.params;
+    const sellerId = req.user.id;
+    const updateData = req.body;
+
+    const updatedSale = await saleService.updateSale(saleId, sellerId, updateData);
+
+    res.status(200).json({
+      success: true,
+      message: '판매 정보가 수정되었습니다.',
+      updatedSale,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 export default saleRouter;
