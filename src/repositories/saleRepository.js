@@ -102,23 +102,21 @@ a 트랜잭션 클라이언트
    * 판매 내리기용 레포
    */
   cancelAndRestoreStock: async (saleId, sellerId, cardId, quantity) => {
-    return (
-      await prisma.$transaction([
-        prisma.userCard.updateMany({
-          where: {
-            userId: sellerId,
-            id: cardId,
-          },
-          data: {
-            totalQuantity: { increment: quantity },
-            status: CardStatus.OWNED,
-          },
-        }),
-      ]),
+    return await prisma.$transaction([
+      prisma.userCard.updateMany({
+        where: {
+          userId: sellerId,
+          id: cardId,
+        },
+        data: {
+          totalQuantity: { increment: quantity },
+          status: CardStatus.OWNED,
+        },
+      }),
       prisma.sale.delete({
         where: { id: saleId },
-      })
-    );
+      }),
+    ]);
   },
 
   /**
