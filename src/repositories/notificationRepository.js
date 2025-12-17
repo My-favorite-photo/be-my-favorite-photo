@@ -14,6 +14,13 @@ const notificationRepository = {
       take: limit,
     });
   },
+
+  markAsRead(id, tx = prisma) {
+    return tx.notification.update({
+      where: { id },
+      data: { isRead: true },
+    });
+  },
 };
 
 export default notificationRepository;

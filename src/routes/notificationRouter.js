@@ -18,4 +18,17 @@ notificationRouter.get('/', async (req, res, next) => {
   }
 });
 
+notificationRouter.post('/read/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const notification = await notificationRepository.markAsRead(id);
+    if (!notification) return res.status(404).json({ error: '알림을 찾을 수 없습니다.' });
+
+    res.json(notification);
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default notificationRouter;
