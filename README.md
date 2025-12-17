@@ -1,4 +1,6 @@
 
+<img width="1917" height="1101" alt="main" src="https://github.com/user-attachments/assets/4ed477d8-838b-46be-9036-0f9fe4df4035" />
+
 ---
 ## 목차
   1. [프로젝트 개요](#overview) 
@@ -8,6 +10,7 @@
   5. [주요 기능](#key-features)
   6. [팀 문서](#team-documents)
   7. [프론트 구경해보기](#check-out-the-frontend)
+  8. [폴더 구조](#directory)
 ---
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000)
@@ -15,7 +18,7 @@
 
 ## Overview
 
-**'최애의 포토'**는 단순히 사진을 저장하는 것을 넘어, 소중한 순간을 **'포토카드'**라는 자산으로 만들어 소장하고 유저들과 교류하는 웹 플랫폼입니다.
+**최애의 포토**는 단순히 사진을 저장하는 것을 넘어, 소중한 순간을 **포토카드**라는 자산으로 만들어 소장하고 유저들과 교류하는 웹 플랫폼입니다.
 
 휘발되는 SNS 피드와 달리, 이곳에서는 당신의 '최애' 순간들이 고유한 가치를 지닌 카드가 됩니다. 나만의 컬렉션을 완성하고, 마켓플레이스에서 취향이 맞는 사람들과 카드를 교환하거나 거래하며 덕질의 즐거움을 확장해 보세요.
 
@@ -101,12 +104,38 @@ Multer
 
 ## Team Documents
 
-
-노션
+노션 주소
 https://www.notion.so/2b662f1437fd806eb6a6dc792d704f26
-미로
+
+미로 주소
 https://miro.com/app/board/uXjVGfn7wg8=/
 
 
 ## Check out the Frontend
 [나의 최애의 포토 백엔드](https://github.com/My-favorite-photo/fe-my-favorite-photo)
+
+## directory
+```
+├── prisma/                    # 데이터베이스 스키마 및 마이그레이션 관리
+│   ├── schema/                
+│   └── migrations/            
+├── src/                       
+│   ├── common/                # 전역 공통 모듈
+│   │   └── exceptions/        # 커스텀 에러 핸들러 (HttpException 등)
+│   ├── configs/               # 환경 설정 및 외부 라이브러리 세팅
+│   │   ├── prismaClient.js    # DB 연결 설정
+│   │   └── swagger.js         # API 문서 설정
+│   ├── controllers/           # 컨트롤러
+│   ├── middlewares/           # 인증, 에러 핸들링, 파일 업로드(Multer) 등 중간 처리
+│   ├── repositories/          # 데이터베이스 레포지토리
+│   ├── routes/                # 엔드포인트 경로 정의
+│   ├── services/              # 핵비즈니스 로직 처리
+│   ├── swaggerDocs/           # API 상세 명세서 (YAML 형식) - 배포시 dist/src로
+│   └── app.js                 # Express 앱 설정 및 서버 실행 메인 파일
+├── http/                      # API 테스트용 .http 파일 (Rest Client)
+├── .github/                   # CI/CD 및 협업 템플릿 (Issue, PR)
+├── .husky/                    # Git Hooks 설정 (Lint-staged)
+├── .env.example               # 환경 변수 샘플
+├── package.json               
+└── README.md
+```
