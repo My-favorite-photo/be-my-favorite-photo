@@ -27,7 +27,7 @@ POST http://localhost:3005/auth/refresh
 Content-Type: application/json
 
 {
-  "refreshToken":
+  "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWo4OG8xMGkwMDAwY2V6OHJvb3BnNnFoIiwiaWF0IjoxNzY1ODcwMTE0LCJleHAiOjE3NjY0NzQ5MTR9.WJFmS4Idiy_XWbTjowbtFyOKaauNiLAt-sqEUY88sW0"
 }
 
 ### 로그인한 사용자 정보 불러오기
