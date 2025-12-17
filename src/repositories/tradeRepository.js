@@ -42,15 +42,9 @@ const tradeRepository = {
     });
   },
 
-  updateTradeStatus(tradeId, newStatus) {
-    return prisma.trade.update({
+  deleteTradeStatus(tradeId) {
+    return prisma.trade.delete({
       where: { id: tradeId },
-      data: {
-        status: newStatus,
-      },
-      include: {
-        applicant: { select: { nickname: true } },
-      },
     });
   },
 

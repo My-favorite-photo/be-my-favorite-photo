@@ -1,13 +1,12 @@
-
 import { BadRequestException } from '../common/exceptions/badRequestException.js';
 import { ForbiddenException } from '../common/exceptions/forbiddenException.js';
 import { NotFoundException } from '../common/exceptions/notFoundException.js';
 import { prisma } from '../configs/prismaClient.js';
 import { CardStatus, TradeItemType, TradeStatus } from '../generated/enums.ts';
+import notificationRepository from '../repositories/notificationRepository.js';
 import saleRepository from '../repositories/saleRepository.js';
 import tradeRepository from '../repositories/tradeRepository.js';
 import userCardRepository from '../repositories/userCardRepository.js';
-import notificationRepository from '../repositories/notificationRepository.js';
 
 // 구매자 교환 요청
 async function requestTradeCard({ applicantId, saleId, offeredUserCardId, description }) {
@@ -97,7 +96,7 @@ async function cancelTradeOffer(tradeId, applicantId) {
       );
     }
 
-    const updateTrade = await tradeRepository.updateTradeStatus(tradeId, TradeStatus.CANCELLED);
+    const updateTrade = await tradeRepository.deleteTradeStatus(tradeId);
 
     // 알림
     const applicant = await tx.user.findUnique({

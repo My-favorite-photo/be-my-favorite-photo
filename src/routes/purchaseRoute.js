@@ -4,9 +4,9 @@ import auth from '../middlewares/auth.js';
 import purchaseService from '../services/purchaseService.js';
 
 const purchaseRouter = express.Router();
-const { verifyAccessToken } = auth;
 
-purchaseRouter.post('/:saleId', verifyAccessToken, async (req, res, next) => {
+purchaseRouter.post('/:saleId', auth.verifyAccessToken, async (req, res, next) => {
+  console.log('--------------------------');
   console.log('BUYER ID:', req.user.id);
   try {
     const buyerId = req.user.id;
