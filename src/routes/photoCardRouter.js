@@ -52,7 +52,9 @@ photoCardRouter.post(
   async (req, res, next) => {
     console.log('start');
     try {
-      const imageUrl = req.file.path;
+      const imageUrl = req.file.key;
+      const publicImageUrl = `${process.env.CLOUD_FLARE_R2_PUBLIC_API}/${imageUrl}`;
+      console.log(publicImageUrl);
       const creatorId = req.user.id;
       const rawGrade = req.body.grade.toUpperCase();
       const rawGenre = req.body.genre.toUpperCase();
@@ -61,7 +63,7 @@ photoCardRouter.post(
       const price = Number(req.body.price);
       const cardData = {
         ...req.body,
-        imageUrl: imageUrl,
+        imageUrl: publicImageUrl,
         grade: rawGrade,
         genre: rawGenre,
         totalQuantity: totalQuantity,
