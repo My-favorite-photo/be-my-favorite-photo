@@ -17,6 +17,7 @@ import purchaseRouter from './routes/purchaseRoute.js';
 import saleRouter from './routes/saleRouter.js';
 import sellMyPhotoRouter from './routes/sellMyPhotoRouter.js';
 import tradeRouter from './routes/tradeRoute.js';
+import notificationRouter from './routes/notificationRouter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,6 +55,7 @@ app.use('/trades', tradeRouter);
 app.use('/events', eventRouter);
 app.use('/purchases', purchaseRouter);
 app.use('/market', marketRouter);
+app.use('/notifications', notificationRouter);
 
 //-------- router module ---------
 
