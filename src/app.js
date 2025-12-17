@@ -12,13 +12,13 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import authRouter from './routes/authRoute.js';
 import eventRouter from './routes/eventRoute.js';
 import marketRouter from './routes/marketSaleRouter.js';
+import notificationRouter from './routes/notificationRouter.js';
 import photoCardRouter from './routes/photoCardRouter.js';
 import purchaseRouter from './routes/purchaseRoute.js';
 import randomPointRouter from './routes/randomPointRoute.js';
 import saleRouter from './routes/saleRouter.js';
 import sellMyPhotoRouter from './routes/sellMyPhotoRouter.js';
 import tradeRouter from './routes/tradeRoute.js';
-import notificationRouter from './routes/notificationRouter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +31,11 @@ app.use(cookieParser());
 
 if (isDevelopment || isTest) {
   app.use(morgan('dev'));
+  app.use('/swaggerDocs', express.static(path.join(__dirname, 'swaggerDocs')));
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+}
+
+if (process.env.SHOW_SWAGGER === 'true') {
   app.use('/swaggerDocs', express.static(path.join(__dirname, 'swaggerDocs')));
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 }

@@ -1,15 +1,3 @@
-/**
- * 컨벤션 규칙 예시
- * route: auth.route.js (라우터와 컨트롤러 통합운용)
- * service:  auth.service.js
- * repositories: auth.repositories
- * 요구사항정의는 route  -> repo순
- */
-
-//export const authRouter  = express.Router()
-
-//authRouter("/", ...some middleware... , authService.signOut)
-
 import express from 'express';
 
 import authMiddleware from '../middlewares/auth.js';
@@ -18,12 +6,6 @@ import authService from '../services/authService.js';
 
 const authRouter = express.Router();
 
-/**
- * @swagger
- * /auth/signup:
- *    post:
- *        $ref: '../swaggerDocs/auth/signup.yaml'
- */
 authRouter.post('/signup', async (req, res, next) => {
   try {
     const { email, password, nickname } = req.body;

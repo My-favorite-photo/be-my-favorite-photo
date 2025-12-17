@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 
 const options = {
   definition: {
-    openApi: '3.0.0',
+    openapi: '3.0.0',
     info: {
       title: 'MyFavoritePhoto API Documentation',
       version: '1.0.0',
@@ -16,16 +16,16 @@ const options = {
     servers: [
       {
         url: 'https://be-my-favorite-photo.onrender.com',
-        description: 'Render Development Server',
+        description: 'Render Production Server',
       },
       {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:3005',
         description: 'Local Development Server',
       },
     ],
     components: {
       securitySchemes: {
-        BearerAuth: {
+        bearerAuth: {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',

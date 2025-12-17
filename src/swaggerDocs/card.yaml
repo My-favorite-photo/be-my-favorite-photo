@@ -1,0 +1,140 @@
+paths:
+  /cards:
+    post:
+      tags:
+        - Cards
+      summary: 포토카드 생성 (이미지 업로드)
+      description: 새로운 포토카드를 생성하고 이미지를 S3/R2에 업로드합니다.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - grade
+                - genre
+                - price
+                - totalQuantity
+                - description
+                - uploads
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: 업로드할 이미지 파일 (PNG, JPG 등)
+                name:
+                  type: string
+                  example: '제주도의 푸른 밤'
+                  description: 카드 이름
+                grade:
+                  type: string
+                  enum: [COMMON, RARE, SUPER_RARE, LEGENDARY]
+                  example: 'RARE'
+                  description: 카드 등급
+                genre:
+                  type: string
+                  enum: [TRAVEL, LANDSCAPE, PORTRAIT, OBJECT]
+                  example: 'LANDSCAPE'
+                  description: 카드 장르
+                price:
+                  type: number
+                  example: 5000
+                  description: 판매 가격
+                totalQuantity:
+                  type: integer
+                  example: 100
+                  description: 총 발행 수량
+                description:
+                  type: string
+                  example: '제주도 협재 해수욕장에서 촬영한 사진입니다.'
+                  description: 카드 상세 설명
+      responses:
+        201:
+          description: 카드 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: '카드가 성공적으로 생성되었습니다.'
+                  card:
+                    $ref: '#/components/schemas/PhotoCard' # components.yaml이 있다면 참조, 없다면 아래 object 구조 직접 작성
+
+    get:
+      tags:
+        - Cards
+      summary: 포토카드 전체 조회 (마켓플레이스)
+      description: 마켓에 등록된 전체 포토카드를 필터링하여 조회합니다.
+      parameters:
+        - in: query
+          name: keyword
+          schema: { type: string }
+        - in: query
+          name: grade
+          schema: { type: string, enum: [COMMON, RARE, SUPER_RARE, LEGENDARY] }
+        - in: query
+          name: genre
+          schema: { type: string, enum: [TRAVEL, LANDSCAPE, PORTRAIT, OBJECT] }
+        - in: query
+          name: sort
+          schema: { type: string, enum: [recent, price_asc, price_desc, popular], default: recent }
+      responses:
+        200:
+          description: 조회 성공
+
+  /cards/my:
+    get:
+      tags:
+        - Cards
+      summary: 내 갤러리 조회
+      description: 로그인한 유저가 소유한 카드 목록을 불러옵니다.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: 내 갤러리 로드 성공
+
+  /cards/my/{userCardId}:
+    get:
+      tags:
+        - Cards
+      summary: 내 소유 카드 상세 조회
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userCardId
+          required: true
+          schema: { type: string }
+      responses:
+        200:
+          description: 카드 상세 정보 로드 성공
+
+  /cards/{photoCardId}:
+    get:
+      tags:
+        - Cards
+      summary: 포토카드 상세 조회
+      description: 특정 포토카드의 상세 정보를 조회합니다.
+      parameters:
+        - in: path
+          name: photoCardId
+          required: true
+          schema:
+            type: string
+          description: 조회할 카드의 CUID
+      responses:
+        200:
+          description: 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhotoCard'
+        404:
+          description: 존재하지 않는 카드

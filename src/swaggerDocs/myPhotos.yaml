@@ -1,0 +1,18 @@
+paths:
+  /sells:
+    get:
+      tags:
+        - MyPhotos
+      summary: 내가 소유한 포토카드 목록 조회
+      description: 현재 로그인한 유저가 보유 중인 모든 포토카드를 가져옵니다. (판매 등록 시 사용)
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: 조회 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserCard'

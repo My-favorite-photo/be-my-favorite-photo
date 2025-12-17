@@ -1,0 +1,183 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        nickname:
+          type: string
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+    SaleItem:
+      type: object
+      properties:
+        id:
+          type: string
+        sellerId:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+        status:
+          type: string
+          enum: [ON_SALE, SOLD_OUT, CLOSED]
+        photoCard:
+          $ref: '#/components/schemas/PhotoCard'
+
+    UserCard:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        photoCardId:
+          type: string
+        quantity:
+          type: integer
+        photoCard:
+          $ref: '#/components/schemas/PhotoCard' # 이전에 만든 PhotoCard 모델 참조
+
+    PhotoCard:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'uuid-1234-5678'
+        imageUrl:
+          type: string
+          example: 'https://pub-xxxx.r2.dev/uploads/image.png'
+        name:
+          type: string
+        grade:
+          type: string
+        genre:
+          type: string
+        price:
+          type: number
+        totalQuantity:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    PurchaseHistory:
+      type: object
+      properties:
+        id:
+          type: string
+        buyerId:
+          type: string
+        saleId:
+          type: string
+        quantity:
+          type: integer
+        totalPrice:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        sale:
+          type: object
+          properties:
+            photoCard:
+              $ref: '#/components/schemas/PhotoCard'
+
+    Purchase:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 구매 내역 고유 ID
+        buyerId:
+          type: string
+          description: 구매자(현재 로그인 유저) ID
+        saleId:
+          type: string
+          description: 연결된 판매글 ID
+        quantity:
+          type: integer
+        totalPrice:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    Trade:
+      type: object
+      properties:
+        id:
+          type: string
+        applicantId:
+          type: string
+          description: 교환 신청자 ID
+        saleId:
+          type: string
+          description: 대상 판매글 ID
+        offeredUserCardId:
+          type: string
+          description: 제시된 카드 ID
+        status:
+          type: string
+          enum: [REQUESTED, APPROVED, REJECTED, CANCELLED]
+          example: 'REQUESTED'
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'uuid-noti-001'
+        userId:
+          type: string
+          description: 알림을 받는 유저의 ID
+        message:
+          type: string
+          example: '회원님의 포토카드가 판매되었습니다!'
+        isRead:
+          type: boolean
+          example: false
+        type:
+          type: string
+          description: 알림 종류 (예시 SALE, TRADE, SYSTEM)
+          example: 'SALE'
+        createdAt:
+          type: string
+          format: date-time
+
+    Point:
+      type: object
+      properties:
+        userId:
+          type: string
+        balance:
+          type: integer
+          description: 현재 보유 포인트
+    PointHistory:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        amount:
+          type: integer
+        type:
+          type: string
+          example: 'RANDOM_EVENT'
+        description:
+          type: string
+          example: '랜덤 포인트 이벤트'

@@ -33,7 +33,6 @@ const s3 = new S3Client({
 const storage = multerS3({
   s3: s3,
   bucket: process.env.CLOUD_FLARE_R2_BUCKET_NAME,
-  acl: 'public-read',
   contentType: multerS3.AUTO_CONTENT_TYPE,
   key: (req, file, done) => {
     const randomId = uuidv4();
