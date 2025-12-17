@@ -100,7 +100,6 @@ const tradeRepository = {
         where: { userId: sale.sellerId, photoCardId: buyerCard.photoCardId },
       });
 
-      console.log(existingCardForSeller);
       // 이미 있으면 수량만 +1
       if (existingCardForSeller) {
         await tx.userCard.update({
@@ -129,9 +128,6 @@ const tradeRepository = {
       const existingCardForBuyer = await tx.userCard.findFirst({
         where: { userId: trade.applicantId, photoCardId: sale.userCard.photoCardId },
       });
-
-      console.log('----------');
-      console.log('existingCardForBuyer', existingCardForBuyer);
 
       // 이미 있으면 수량만 +1
       if (existingCardForBuyer) {
