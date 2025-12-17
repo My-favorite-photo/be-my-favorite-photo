@@ -6,8 +6,6 @@ import purchaseService from '../services/purchaseService.js';
 const purchaseRouter = express.Router();
 
 purchaseRouter.post('/:saleId', auth.verifyAccessToken, async (req, res, next) => {
-  console.log('--------------------------');
-  console.log('BUYER ID:', req.user.id);
   try {
     const buyerId = req.user.id;
     const saleId = req.params.saleId;

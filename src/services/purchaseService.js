@@ -3,9 +3,9 @@ import { ConflictException } from '../common/exceptions/conflictException.js';
 import { ForbiddenException } from '../common/exceptions/forbiddenException.js';
 import { NotFoundException } from '../common/exceptions/notFoundException.js';
 import { prisma } from '../configs/prismaClient.js';
-import { SaleStatus } from '../generated/enums.ts';
-import pointService from './pointService.js';
+import { CardStatus, SaleStatus } from '../generated/enums.ts';
 import notificationRepository from '../repositories/notificationRepository.js';
+import pointService from './pointService.js';
 
 async function purchase({ saleId, buyerId, quantity }) {
   if (!saleId || !buyerId) {
@@ -19,12 +19,8 @@ async function purchase({ saleId, buyerId, quantity }) {
     // 판매글 조회
     const sale = await tx.sale.findUnique({
       where: { id: saleId },
-      select: {
-        id: true,
-        sellerId: true,
-        price: true,
-        status: true,
-        remainingQuantity: true,
+      include: {
+        userCard: { select: { photoCard: true, photoCardId: true } },
       },
     });
 
@@ -36,25 +32,13 @@ async function purchase({ saleId, buyerId, quantity }) {
     if (sale.remainingQuantity < quantity) throw new ConflictException('판매 수량이 부족합니다!');
 
     // 재고 차감
-    const dec = await tx.sale.updateMany({
-      where: {
-        id: saleId,
-        status: SaleStatus.ON_SALE,
-        remainingQuantity: { gte: quantity },
+    await tx.sale.update({
+      where: { id: saleId },
+      data: {
+        remainingQuantity: { decrement: quantity },
+        status: sale.remainingQuantity - quantity === 0 ? SaleStatus.SOLD_OUT : SaleStatus.ON_SALE,
       },
-      data: { remainingQuantity: { decrement: quantity } },
     });
-    if (dec.count !== 1) throw new ConflictException('구매 처리 중 판매 상태가 변경되었습니다.');
-
-    // 실제 카드 확보
-    const saleHistories = await tx.saleHistory.findMany({
-      where: { saleId },
-      take: quantity,
-      select: { userCardId: true },
-    });
-    if (saleHistories.length !== quantity)
-      throw new ConflictException('판매 카드 재고가 부족합니다.');
-    const userCardIds = saleHistories.map((x) => x.userCardId);
 
     // 결제
     const totalPrice = sale.price * quantity;
@@ -67,16 +51,31 @@ async function purchase({ saleId, buyerId, quantity }) {
       `판매글(${saleId}) 판매 수익`,
     );
 
-    // 카드 소유권 이전
-    const moved = await tx.userCard.updateMany({
-      where: { id: { in: userCardIds }, userId: sale.sellerId, status: SaleStatus.ON_SALE },
-      data: { userId: buyerId, status: 'OWNED' },
+    // 카드 소유권 이전 (판매자 차감 -> 구매자 합산)
+    await tx.userCard.update({
+      where: { id: sale.userCardId },
+      data: { totalQuantity: { decrement: quantity } },
     });
-    if (moved.count !== quantity) throw new ConflictException('카드 소유권 이전에 실패했습니다.');
 
-    // 세일 히스토리 정리
-    await tx.saleHistory.deleteMany({ where: { saleId, userCardId: { in: userCardIds } } });
+    const existingBuyerCard = await tx.userCard.findFirst({
+      where: { userId: buyerId, photoCardId: sale.userCard.photoCardId },
+    });
 
+    if (existingBuyerCard) {
+      await tx.userCard.update({
+        where: { id: existingBuyerCard.id },
+        data: { totalQuantity: { increment: quantity } },
+      });
+    } else {
+      await tx.userCard.create({
+        data: {
+          userId: buyerId,
+          photoCardId: sale.userCard.photoCardId,
+          totalQuantity: quantity,
+          status: CardStatus.OWNED,
+        },
+      });
+    }
     // SOLD_OUT 처리
     const remainingSale = await tx.sale.findUnique({
       where: { id: saleId },
@@ -88,24 +87,12 @@ async function purchase({ saleId, buyerId, quantity }) {
 
     // 알림 생성
     const buyer = await tx.user.findUnique({ where: { id: buyerId }, select: { nickname: true } });
-    const card = await tx.userCard.findFirst({
-      where: {
-        id: { in: userCardIds },
-      },
-      select: {
-        photoCard: {
-          select: {
-            grade: true,
-            name: true,
-          },
-        },
-      },
-    });
+    const photoCard = sale.userCard.photoCard;
 
     await notificationRepository.create(
       {
         userId: sale.sellerId,
-        content: `${buyer.nickname}님이 [${card.photoCard.grade} | ${card.photoCard.name}]을 ${quantity}장 구매했습니다.`,
+        content: `${buyer.nickname}님이 [${photoCard.grade} | ${photoCard.name}]을 ${quantity}장 구매했습니다.`,
       },
       tx,
     );
@@ -113,7 +100,7 @@ async function purchase({ saleId, buyerId, quantity }) {
     await notificationRepository.create(
       {
         userId: buyerId,
-        content: `[${card.photoCard.grade} | ${card.photoCard.name}] ${quantity}장 구매가 성공적으로 완료되었습니다.`,
+        content: `[${photoCard.grade} | ${photoCard.name}] ${quantity}장 구매가 성공적으로 완료되었습니다.`,
       },
       tx,
     );
