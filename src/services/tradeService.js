@@ -1,5 +1,3 @@
-'use client';
-
 import { BadRequestException } from '../common/exceptions/badRequestException.js';
 import { ForbiddenException } from '../common/exceptions/forbiddenException.js';
 import { NotFoundException } from '../common/exceptions/notFoundException.js';
