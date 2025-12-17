@@ -1,5 +1,6 @@
 import { NotFoundException } from '../common/exceptions/notFoundException.js';
 import { prisma } from '../configs/prismaClient.js';
+import { CardStatus } from '../generated/enums.ts';
 import photoCardRepository from '../repositories/photoCardRepository.js';
 import saleRepository from '../repositories/saleRepository.js';
 
@@ -26,7 +27,7 @@ async function createNewCard(creatorId, data) {
       data: {
         userId: creatorId,
         photoCardId: newPhotoCard.id,
-        status: 'OWNED',
+        status: CardStatus.OWNED,
         price: data.price,
         totalQuantity: data.totalQuantity,
       },
