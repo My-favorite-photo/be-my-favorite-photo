@@ -38,7 +38,7 @@
     "copy:assets": "cp -r src/swaggerDocs dist/src/swaggerDocs"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.953.0",
+    "@aws-sdk/client-s3": "^3.995.0",
     "@faker-js/faker": "^10.0.0",
     "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "^7.0.0",
